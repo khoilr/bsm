@@ -1,0 +1,73 @@
+version: '3'
+services:
+  redis:
+    image: redis
+    ports:
+      - "30001:6379"
+    networks:
+      - bsm
+    volumes:
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
+      - ./backup/redis_data:/data
+    command: redis-server /usr/local/etc/redis/redis.conf
+
+  postgres:
+    image: postgres
+    ports:
+      - "30002:5432"
+    networks:
+      - bsm
+    volumes:
+      - ./backup/postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    healthcheck:
+      test: [ 'CMD', 'pg_isready', '-U', 'postgres' ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  migrator:
+    build:
+      context: .
+      dockerfile: database/dockerfile
+    restart: "no"
+    command: aerich upgrade
+    environment:
+      BSM_SERVER_DB_HOST: postgres
+      BSM_SERVER_DB_PORT: 5432
+      BSM_SERVER_DB_USER: postgres
+      BSM_SERVER_DB_PASS: postgres
+      BSM_SERVER_DB_BASE: postgres
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - bsm
+
+  server:
+    build:
+      context: .
+      dockerfile: server/dockerfile
+    depends_on: 
+      - redis
+      - postgres
+      - migrator
+    ports:
+      - "30000:8000"
+    environment:
+      BSM_SERVER_DB_HOST: postgres
+      BSM_SERVER_DB_PORT: 5432
+      BSM_SERVER_DB_USER: postgres
+      BSM_SERVER_DB_PASS: postgres
+      BSM_SERVER_DB_BASE: postgres
+      BSM_SERVER_REDIS_HOST: redis
+      BSM_SERVER_REDIS_PORT: 6379
+    networks:
+      - bsm
+    
+networks:
+  bsm:
+    driver: bridge
