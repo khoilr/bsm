@@ -4,7 +4,7 @@ from tortoise import fields, models
 class UserModel(models.Model):
     """Data model for user."""
 
-    # Fields
+    # Fields 
     user_id = fields.IntField(pk=True)
     created_at = fields.DatetimeField(auto_now_add=True)
     updated_at = fields.DatetimeField(auto_now=True)
