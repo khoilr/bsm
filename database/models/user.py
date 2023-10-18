@@ -11,7 +11,7 @@ class UserModel(models.Model):
     name = fields.CharField(max_length=200)
     username = fields.CharField(max_length=200, unique=True)
     password = fields.CharField(max_length=200)
-    manager = fields.BooleanField()
+    manager = fields.BooleanField(default=False)
 
     class Meta:
         table = "user"

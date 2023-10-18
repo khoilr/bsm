@@ -11,7 +11,6 @@ MODELS_MODULES: List[str] = [
     "database.models.person",
     "database.models.user",
     "database.models.zone",
-    "aerich.models"
 ]  # noqa: WPS407
 
 TORTOISE_CONFIG = {  # noqa: WPS407
@@ -20,7 +19,7 @@ TORTOISE_CONFIG = {  # noqa: WPS407
     },
     "apps": {
         "models": {
-            "models": MODELS_MODULES,
+            "models": MODELS_MODULES + ["aerich.models"],
             "default_connection": "default",
         },
     },

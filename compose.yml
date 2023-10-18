@@ -65,6 +65,8 @@ services:
       BSM_SERVER_DB_BASE: postgres
       BSM_SERVER_REDIS_HOST: redis
       BSM_SERVER_REDIS_PORT: 6379
+    env_file:
+      - api-variables.env
     networks:
       - bsm
     

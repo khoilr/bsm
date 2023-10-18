@@ -7,7 +7,7 @@ from typing import Any, Union
 from dotenv import load_dotenv
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-# from jose import JWTError, jwt
+from jose import JWTError, jwt
 
 from database.dao.user import UserDAO
 from database.models.user import UserModel
@@ -15,8 +15,8 @@ from server.utils.authentication.password import verify_password
 
 load_dotenv()
 
-SECRET_KEY = os.getenv("SECRET_KEY")
-ALGORITHM = os.getenv("ALGORITHM")
+SECRET_KEY = "123456"
+ALGORITHM = "HS256"
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/token")
 
@@ -89,7 +89,7 @@ def encode_token(data: dict[str, Any]) -> str:
     to_encode.update({"exp": expire})
 
     # Encode data
-    encoded_jwt = "blabla" #jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
     # Return encoded data
     return encoded_jwt
@@ -109,7 +109,7 @@ def decode_token(token: str) -> dict[str, Any]:
         dict[str, Any]: decoded token or error
     """
     try:
-        payload = "blabla" #jwt.decode(token=token, key=SECRET_KEY, algorithms=[ALGORITHM])
+        payload = jwt.decode(token=token, key=SECRET_KEY, algorithms=[ALGORITHM])
         return payload
     except Exception:
         raise HTTPException(
