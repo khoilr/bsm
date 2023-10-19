@@ -13,5 +13,8 @@ class UserModel(models.Model):
     password = fields.CharField(max_length=200)
     manager = fields.BooleanField(default=False)
 
+    def __str__(self):
+        return self.name
+    
     class Meta:
         table = "user"

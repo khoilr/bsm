@@ -8,6 +8,8 @@ class PersonModel(models.Model):
     created_at = fields.DatetimeField(auto_now_add=True)
     updated_at = fields.DatetimeField(auto_now=True)
 
-
+    def __str__(self):
+        return self.person_name
+    
     class Meta:
         table = "Person"

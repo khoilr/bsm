@@ -41,6 +41,10 @@ class RegisteredFaceModel(models.Model):
 
 
     #Relationship
-    person = fields.ForeignKeyField("models.PersonModel", related_name="personmodel")
+    person = fields.ForeignKeyField("models.PersonModel", related_name="personmodel_face")
+
+    def __str__(self):
+        return self.picture
+
     class Meta:
         table = "Face"

@@ -9,7 +9,7 @@ class AttendaceTrackingModel(models.Model):
 
 
     #Relationship
-    camera = fields.ForeignKeyField("models.ZoneModel",related_name="cameramodel_attendance")
+    camera = fields.ForeignKeyField("models.ZoneModel", related_name="cameramodel_attendance")
     face = fields.ForeignKeyField("models.RegisteredFaceModel", related_name="facemodel_tracking")
     class Meta:
         table = "AttendanceTracking"
