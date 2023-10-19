@@ -51,7 +51,7 @@ services:
     build:
       context: .
       dockerfile: server/dockerfile
-    depends_on: 
+    depends_on:
       - redis
       - postgres
       - migrator
@@ -65,11 +65,19 @@ services:
       BSM_SERVER_DB_BASE: postgres
       BSM_SERVER_REDIS_HOST: redis
       BSM_SERVER_REDIS_PORT: 6379
-    env_file:
-      - api-variables.env
     networks:
       - bsm
-    
+
+  blob:
+    build:
+      context: .
+      dockerfile: blob/dockerfile
+    restart: "always"
+    ports:
+      - "30003:8000"
+    volumes:
+      - ./blob:/app/blob
+
 networks:
   bsm:
     driver: bridge
