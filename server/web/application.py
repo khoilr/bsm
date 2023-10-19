@@ -24,10 +24,6 @@ def get_app() -> FastAPI:
         openapi_url="/api/openapi.json",
         default_response_class=UJSONResponse,
     )
-    app.add_middleware(
-    CORSMiddleware,
-    allow_origins=['*']
-)
 
     # Adds startup and shutdown events.
     register_startup_event(app)
