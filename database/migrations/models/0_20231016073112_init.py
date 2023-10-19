@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS "user" (
     "name" VARCHAR(200) NOT NULL,
     "username" VARCHAR(200) NOT NULL UNIQUE,
     "password" VARCHAR(200) NOT NULL,
-    "manager" BOOL NOT NULL
+    "manager" BOOL NOT NULL DEFAULT FALSE
 );
 COMMENT ON TABLE "user" IS 'Data model for user.';
 CREATE TABLE IF NOT EXISTS "Zone" (

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>WebSocket Image Display</title>
+</head>
+
+<body>
+    <img id="imageElement" src="" alt="Image">
+    <script>
+        const socket = new WebSocket('ws://localhost:8000/api/ws');
+        socket.onmessage = function (event) {
+            const imageUrl = 'data:image/jpeg;base64,' + event.data;
+            console.log('receive data');
+            document.getElementById('imageElement').src = imageUrl;
+        };
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,24 @@
+.p1 {
+    background-color: blue;
+    color: white;
+    padding: 16px;
+}
+
+.p2 {
+    background-color: transparent;
+    position: relative;
+    height: 500px;
+    color: black;
+    top: 50px;
+    left: 60px;
+}
+
+.c1 {
+    position: absolute;
+    border: 1px solid black;
+    width: 100px;
+    height: 100px;
+    top: 0px;
+}
+
+.c2 {}

@@ -3,3 +3,4 @@ aerich
 pydantic_settings
 yarl
 asyncpg
+PyJWT

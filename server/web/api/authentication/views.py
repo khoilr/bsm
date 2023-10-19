@@ -38,7 +38,7 @@ async def sign_in(input_data: OAuth2PasswordRequestForm = Depends()) -> Response
         )
 
     # Generate token
-    token = authentication.encode_token(data={"id": user.id})
+    token = authentication.encode_token(data={"id": user.user_id})
 
     # Set header and content
     headers = {
