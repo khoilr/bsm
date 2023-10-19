@@ -14,3 +14,4 @@ opencv-python
 loguru
 python-jose
 python-multipart
+python-socketio
