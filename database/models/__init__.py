@@ -1,1 +1,1 @@
-"""Models for bsm_server."""
+"""Models for bms_server."""

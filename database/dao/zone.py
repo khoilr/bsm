@@ -1,9 +1,9 @@
-from typing import List, Optional
+from typing import List, Optional, Union
 
-from bms_server.db.models.dummy_model import DummyModel
+from bms_server.db.models.zone import ZoneModel
 
 
-class DummyDAO:
+class ZoneDao:
     """Class for accessing dummy table."""
 
     async def create(self, name: str) -> None:
@@ -12,9 +12,9 @@ class DummyDAO:
 
         :param name: name of a dummy.
         """
-        await DummyModel.create(name=name)
+        await ZoneModel.create(name=name)
 
-    async def getOne(self, limit: int, offset: int) -> List[DummyModel]:
+    async def getOne(self, id: Optional[int]=None,) -> Union[ZoneModel, None]:
         """
         Get all dummy models with limit/offset pagination.
 
@@ -22,9 +22,12 @@ class DummyDAO:
         :param offset: offset of dummies.
         :return: stream of dummies.
         """
-        return await DummyModel.all().offset(offset).limit(limit)
+        if id:
+            query = ZoneModel.filter(id=id).first()
+            return await query
+        return None
 
-    async def getAll(self, limit: int, offset: int) -> List[DummyModel]:
+    async def getAll(self, limit: int, offset: int) -> List[ZoneModel]:
         """
         Get all dummy models with limit/offset pagination.
 
@@ -32,16 +35,16 @@ class DummyDAO:
         :param offset: offset of dummies.
         :return: stream of dummies.
         """
-        return await DummyModel.all().offset(offset).limit(limit)
+        return await ZoneModel.all().offset(offset).limit(limit)
 
-    async def filter(self, name: Optional[str] = None) -> List[DummyModel]:
+    async def filter(self, name: Optional[str] = None) -> List[ZoneModel]:
         """
         Get specific dummy model.
 
         :param name: name of dummy instance.
         :return: dummy models.
         """
-        query = DummyModel.all()
+        query = ZoneModel.all()
         if name:
             query = query.filter(name=name)
         return await query

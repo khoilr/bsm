@@ -1,21 +1,23 @@
 from tortoise import fields, models
 
+
 class CameraModel(models.Model):
     """Tortoise-based camera model."""
     # Fields
-    camera_id = fields.IntField(pk=True)
-    camera_name = fields.CharField(max_length=256)
-    is_for_attendance = fields.BooleanField(default=False)
+    id = fields.IntField(pk=True)
+    name = fields.CharField(max_length=255)
+    description = fields.CharField(max_length=255)
+    connect_uri = fields.CharField(max_length=255)
+    # type like socket, stream, ezviz,...
+    type = fields.IntField()
+
     created_at = fields.DatetimeField(auto_now_add=True)
     updated_at = fields.DatetimeField(auto_now=True)
 
+    # Relationship
+    zone = fields.ForeignKeyField("models.ZoneModel")
 
-    #Relationship
-    zone = fields.ForeignKeyField("models.ZoneModel", related_name="Zone_camera")
-    face_logs = fields.ReverseRelation["models.RegisteredFaceModel"]
-    attendance_logs = fields.ReverseRelation["models.AttendaceTrackingModel"]
-    user = fields.ReverseRelation["models.UserModel"]
-
+    # user = fields.ReverseRelation["models.UserModel"]
 
     class Meta:
         table = "Camera"
