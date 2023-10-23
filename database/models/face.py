@@ -29,7 +29,7 @@ class IntArrayField(Field, list):
             return [int(x) for x in array]
         return value
     
-class RegisteredFaceModel(models.Model):
+class FaceModel(models.Model):
     """Tortoise-based face model."""
     # Fields
     face_id = fields.IntField(pk=True)

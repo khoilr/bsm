@@ -12,7 +12,7 @@ class CameraModel(models.Model):
 
     #Relationship
     zone = fields.ForeignKeyField("models.ZoneModel", related_name="Zone_camera")
-    face_logs = fields.ReverseRelation["models.RegisteredFaceModel"]
+    face_logs = fields.ReverseRelation["models.FaceModel"]
     attendance_logs = fields.ReverseRelation["models.AttendaceTrackingModel"]
     user = fields.ReverseRelation["models.UserModel"]
 

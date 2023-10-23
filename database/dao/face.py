@@ -1,12 +1,12 @@
 from typing import List, Optional, Union
 
-from database.models.face import RegisteredFaceModel
+from database.models.face import FaceModel
 
 
 class FaceDAO:
     """Class for accessing face table."""
 
-    async def create(self, frame: str, picture: str, boundary: list[int]) -> RegisteredFaceModel:
+    async def create(self, frame: str, picture: str, boundary: list[int]) -> FaceModel:
         """
         Add single face to session.
 
@@ -16,15 +16,15 @@ class FaceDAO:
             boundary (list[int]): boundary array
 
         Returns:
-            RegisteredFaceModel: Face model.
+            FaceModel: Face model.
         """
-        return await RegisteredFaceModel.create(
+        return await FaceModel.create(
             frame=frame,
             picture=picture,
             boundary=boundary
         )
 
-    async def get_all(self, limit: int, offset: int) -> List[RegisteredFaceModel]:
+    async def get_all(self, limit: int, offset: int) -> List[FaceModel]:
         """
         Get all Face models with limit/offset pagination.
 
@@ -33,11 +33,11 @@ class FaceDAO:
             offset (int): offset of dummies.
 
         Returns:
-            List[RegisteredFaceModel]: face models.
+            List[FaceModel]: face models.
         """
-        return await RegisteredFaceModel.all().offset(offset).limit(limit)
+        return await FaceModel.all().offset(offset).limit(limit)
 
-    async def filter(self, frame:  Optional[str] = None, picture:  Optional[str] = None, boundary:  Optional[list[int]] = None) -> List[RegisteredFaceModel]:
+    async def filter(self, frame:  Optional[str] = None, picture:  Optional[str] = None, boundary:  Optional[list[int]] = None) -> List[FaceModel]:
         """
         Get specific face model.
 
@@ -47,9 +47,9 @@ class FaceDAO:
             boundary (Optional[list[int]], optional): boundary array. Defaults to None.
 
         Returns:
-            List[RegisteredFaceModel]: user models.
+            List[FaceModel]: user models.
         """
-        query = RegisteredFaceModel.all()
+        query = FaceModel.all()
         try:
             query = query.filter(frame=frame, picture=picture, boundary=boundary)
         except:
@@ -60,7 +60,7 @@ class FaceDAO:
         self,
         face_id: Optional[int] = None,
         picture: Optional[str] = None,
-    ) -> Union[RegisteredFaceModel, None]:
+    ) -> Union[FaceModel, None]:
         """
         Get specific face model.
 
@@ -69,9 +69,9 @@ class FaceDAO:
             picture (Optional[str], optional): picture. Defaults to None.
 
         Returns:
-            Union[RegisteredFaceModel, None]: face object, return None if none exists
+            Union[FaceModel, None]: face object, return None if none exists
         """
-        query = RegisteredFaceModel.all()
+        query = FaceModel.all()
         if face_id:
             query = query.filter(face_id=face_id).first()
         elif picture:

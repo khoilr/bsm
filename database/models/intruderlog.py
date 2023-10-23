@@ -9,7 +9,7 @@ class LogModel(models.Model):
 
     #Relationship
     camera = fields.ForeignKeyField("models.ZoneModel",related_name="cameramodel_log")
-    face = fields.ForeignKeyField("models.RegisteredFaceModel", related_name="facemodel_log")
+    face = fields.ForeignKeyField("models.FaceModel", related_name="facemodel_log")
 
     def __str__(self):
         return f"Attendance by {self.face.person.person_name} - {self.created_at}"
