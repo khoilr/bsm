@@ -8,6 +8,7 @@ from database.models.user import UserModel
 from server.utils import authentication
 from server.utils.authentication import password as auth_password
 from server.web.api.user.schema import UserOutputDTO
+from loguru import logger
 
 router = APIRouter(prefix="/auth")
 
@@ -28,7 +29,6 @@ async def sign_in(input_data: OAuth2PasswordRequestForm = Depends()) -> Response
     """
     # Generate token for user
     user = await authentication.authenticate(input_data.username, input_data.password)
-
     # Raise error when user is None
     if user is None:
         raise HTTPException(

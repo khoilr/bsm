@@ -17,8 +17,8 @@ services:
       - "30002:5432"
     networks:
       - bsm
-    volumes:
-      - ./backup/postgres_data:/var/lib/postgresql/data
+    # volumes:
+    #   - ./backup/postgres_data:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres

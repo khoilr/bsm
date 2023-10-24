@@ -1,5 +1,4 @@
 from tortoise import fields, models
-from camera import CameraModel
 class ZoneModel(models.Model):
     """Tortoise-based zone model."""
     # Fields
