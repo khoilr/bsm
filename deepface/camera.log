@@ -80,3 +80,8 @@
 2023-09-25 09:05:54.464 | INFO     | __main__:recognize_face:99 - Face ID 2 is verified as the same person.
 2023-09-25 09:05:55.026 | INFO     | __main__:save_image:182 - Saved image to camera_web/images/frames/720b1bbe-d980-4afa-ae2a-296088850493.jpg
 2023-09-25 09:06:06.945 | INFO     | __main__:recognize_face:99 - Face ID 1 is verified as the same person.
+2023-10-24 09:58:02.213 | INFO     | __main__:main:211 - Connected to the camera.
+2023-10-24 09:58:51.058 | ERROR    | __main__:main:219 - Failed to capture frame.
+2023-10-24 09:58:51.114 | ERROR    | __main__:main:219 - Failed to capture frame.
+2023-10-24 10:03:01.581 | ERROR    | __main__:main:219 - Failed to capture frame.
+2023-10-24 10:03:58.252 | ERROR    | __main__:main:219 - Failed to capture frame.

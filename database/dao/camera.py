@@ -1,6 +1,6 @@
 from typing import List, Optional, Union
 from tortoise.contrib.pydantic import pydantic_model_creator
-from bms_server.db.models.camera import CameraModel
+from database.models.camera import CameraModel
 
 
 class CameraDao:

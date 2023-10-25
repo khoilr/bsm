@@ -14,7 +14,7 @@ services:
   postgres:
     image: postgres
     ports:
-      - "30002:5432"
+      - "5432:5432"
     networks:
       - bsm
     volumes:

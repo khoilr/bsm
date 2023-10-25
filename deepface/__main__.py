@@ -1,10 +1,9 @@
 import concurrent.futures
 import os
 import uuid
-from pprint import pprint
+
 from typing import Union
 
-from database.dao import user
 import cv2
 import numpy as np
 import pandas as pd
@@ -20,7 +19,9 @@ MAX_CAP_OPEN_FAILURES = 10
 MAX_READ_FRAME_FAILURES = 10
 FRAME_FREQUENCY = 10
 FACE_THRESHOLD = 5
-
+FACES_CSV_FILE = 'faces.csv'
+PERSONS_CSV_FILE = 'persons.csv'
+FRAME_PATH = 'frame'
 
 # Init DataFrame
 df_faces: pd.DataFrame = (
@@ -31,7 +32,6 @@ df_faces: pd.DataFrame = (
 df_persons: pd.DataFrame = (
     pd.read_csv(PERSONS_CSV_FILE) if os.path.exists(PERSONS_CSV_FILE) else pd.DataFrame(columns=["FaceID", "Name"])
 )
-
 
 # Configure logger
 logger.add(LOG_FILE, rotation="500 MB")

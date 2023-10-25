@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from bms_server.db.models.dummy_model import DummyModel
+from database.models.dummy_model import DummyModel
 
 
 class DummyDAO:

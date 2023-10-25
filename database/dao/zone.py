@@ -1,6 +1,6 @@
 from typing import List, Optional, Union
 
-from bms_server.db.models.zone import ZoneModel
+from database.models.zone import ZoneModel
 
 
 class ZoneDao:

@@ -5,3 +5,7 @@ env
 .idea/inspectionProfiles/profiles_settings.xml
 .idea/bsm.iml
 *.pyc
+*.pyc
+*.pyc
+database/__pycache__/settings.cpython-310.pyc
+database/__pycache__/config.cpython-310.pyc

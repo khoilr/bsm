@@ -6,8 +6,8 @@ class CameraModel(models.Model):
     # Fields
     id = fields.IntField(pk=True)
     name = fields.CharField(max_length=255)
-    description = fields.CharField(max_length=255)
-    connect_uri = fields.CharField(max_length=255)
+    description = fields.CharField(max_length=256)
+    connect_uri = fields.CharField(max_length=256)
     # type like socket, stream, ezviz,...
     type = fields.IntField()
 
