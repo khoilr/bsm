@@ -5,7 +5,8 @@ async def upgrade(db: BaseDBAsyncClient) -> str:
     return """
         CREATE TABLE IF NOT EXISTS "dummymodel" (
     "id" SERIAL NOT NULL PRIMARY KEY,
-    "name" VARCHAR(200) NOT NULL
+    "name" VARCHAR(200) NOT NULL,
+    "description" VARCHAR(155) NOT NULL
 );
 COMMENT ON TABLE "dummymodel" IS 'Model for demo purpose.';
 CREATE TABLE IF NOT EXISTS "Person" (
@@ -59,8 +60,8 @@ COMMENT ON TABLE "AttendanceTracking" IS 'Tortoise-based log model.';
 CREATE TABLE IF NOT EXISTS "Camera" (
     "id" SERIAL NOT NULL PRIMARY KEY,
     "name" VARCHAR(255) NOT NULL,
-    "description" VARCHAR(255) NOT NULL,
-    "connect_uri" VARCHAR(255) NOT NULL,
+    "description" VARCHAR(256) NOT NULL,
+    "connect_uri" VARCHAR(256) NOT NULL,
     "type" INT NOT NULL,
     "created_at" TIMESTAMPTZ NOT NULL  DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMPTZ NOT NULL  DEFAULT CURRENT_TIMESTAMP,
