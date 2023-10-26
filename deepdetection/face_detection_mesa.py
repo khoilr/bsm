@@ -1,4 +1,5 @@
 import concurrent.futures
+import datetime
 import os
 import uuid
 from pprint import pprint
@@ -10,6 +11,7 @@ import pandas as pd
 from loguru import logger
 
 from deepface import DeepFace
+from deepdetection.face_handler import *
 
 # Constants
 LOG_FILE = "camera.log"
@@ -23,7 +25,6 @@ MAX_READ_FRAME_FAILURES = 10
 FRAME_FREQUENCY = 5
 FACE_THRESHOLD = 5
 
-
 # Init DataFrame
 df_faces: pd.DataFrame = (
     pd.read_csv(FACES_CSV_FILE)
@@ -33,7 +34,6 @@ df_faces: pd.DataFrame = (
 df_persons: pd.DataFrame = (
     pd.read_csv(PERSONS_CSV_FILE) if os.path.exists(PERSONS_CSV_FILE) else pd.DataFrame(columns=["FaceID", "Name"])
 )
-
 
 # Configure logger
 logger.add(LOG_FILE, rotation="500 MB")
@@ -124,7 +124,6 @@ def detect_faces(frame):
         enforce_detection=False,
         align=True,
     )
-
     # Init is_change, when is_change is True, save df_faces to CSV file
     is_change = False
 
@@ -133,9 +132,10 @@ def detect_faces(frame):
         # Iterate through faces
         for face in face_objs:
             # Skip if confidence is 0 or infinity
+
             if face["confidence"] <= 0:
                 continue
-
+            logger.info("Face confidence: " + str(face["confidence"]))
             # Set is_change to True
             is_change = True
 
@@ -144,10 +144,10 @@ def detect_faces(frame):
 
             # Create row to add to df_faces
             new_face_row = {
-                "Datetime": str(pd.Timestamp.now()),
+                "Datetime": int(datetime.datetime.now().timestamp()),
                 "FrameFilePath": frame_path,
                 "Confidence": face["confidence"],
-                "X": face["facial_area"]["x"],
+                "X": (face["facial_area"]["x"]),
                 "Y": face["facial_area"]["y"],
                 "Width": face["facial_area"]["w"],
                 "Height": face["facial_area"]["h"],
@@ -163,7 +163,9 @@ def detect_faces(frame):
             new_face_row["FaceID"] = face_id
             df_faces.loc[len(df_faces)] = new_face_row
 
+        # detected successfully
         if is_change:
+            handleFaceDetected(new_face_row)
             df_faces.to_csv(FACES_CSV_FILE, index=False)
 
 

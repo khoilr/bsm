@@ -1,4 +1,4 @@
-env
+
 .idea/vcs.xml
 .idea/modules.xml
 .idea/inspectionProfiles/Project_Default.xml
@@ -9,3 +9,4 @@ env
 *.pyc
 database/__pycache__/settings.cpython-310.pyc
 database/__pycache__/config.cpython-310.pyc
+/deepdetection/camera_web/
