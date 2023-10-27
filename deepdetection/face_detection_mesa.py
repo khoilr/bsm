@@ -11,7 +11,7 @@ import pandas as pd
 from loguru import logger
 
 from deepface import DeepFace
-from deepdetection.face_handler import *
+from face_handler import *
 
 # Constants
 LOG_FILE = "camera.log"

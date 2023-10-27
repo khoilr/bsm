@@ -8,4 +8,5 @@ SERVER_SCHEME=os.getenv('SERVER_SCHEME')
 SERVER_HOST=os.getenv('SERVER_HOST')
 SERVER_PORT=os.getenv('SERVER_PORT')
 
+print("env: "+SERVER_SCHEME+SERVER_HOST+":"+SERVER_PORT)
 ###############################

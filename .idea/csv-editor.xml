@@ -3,14 +3,7 @@
   <component name="CsvFileAttributes">
     <option name="attributeMap">
       <map>
-        <entry key="/deepface/faces.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value="," />
-            </Attribute>
-          </value>
-        </entry>
-        <entry key="/deepface/persons.csv">
+        <entry key="/deepdetection/faces.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
