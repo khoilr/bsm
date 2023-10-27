@@ -8,3 +8,4 @@ gdown~=4.7.1
 loguru~=0.7.2
 black
 sqlalchemy
+python-dotenv
