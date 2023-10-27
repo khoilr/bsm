@@ -1,6 +1,6 @@
 __pycache__
 .idea
-backup
+backups
 *.pyc
 *.pyc
 *.rdb
