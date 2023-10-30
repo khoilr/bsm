@@ -9,3 +9,4 @@ loguru~=0.7.2
 black
 sqlalchemy
 python-dotenv
+requests-toolbelt
