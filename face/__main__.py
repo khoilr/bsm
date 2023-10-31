@@ -11,7 +11,6 @@ LOG_FILE = "camera.log"
 FACES_CSV_FILE = "faces.csv"
 PERSONS_CSV_FILE = "persons.csv"
 URL = "rtsp://0.tcp.ap.ngrok.io:10708/user:1cinnovation;pwd:1cinnovation123"
-FRAME_PATH = "camera_web/images/frames"
 MAX_WORKERS = 4
 MAX_CAP_OPEN_FAILURES = 10
 MAX_READ_FRAME_FAILURES = 10
@@ -22,18 +21,12 @@ FACE_THRESHOLD = 5
 # Configure logger
 logger.add(LOG_FILE, rotation="500 MB")
 
-print("khoicute")
-
 
 # Main function to capture frames, process faces, and save results
 def main():
     frame_counter = 0
     read_frame_failures_counter = 0
     cap_open_counter = 0
-
-    # Create directories for storing images
-    os.makedirs(FRAME_PATH, exist_ok=True)
-    # os.makedirs("images/processing", exist_ok=True)
 
     while cap_open_counter < MAX_CAP_OPEN_FAILURES:
         cap = cv2.VideoCapture(URL)

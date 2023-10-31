@@ -2,21 +2,20 @@ import os
 import uuid
 from datetime import datetime
 from typing import Union
-
+import redis
 import cv2
 import numpy as np
 import pandas as pd
 import requests
 from deepface import DeepFace
 from dotenv import load_dotenv
-
-from database.dao.face import FaceDAO
-from database.dao.person import PersonDAO
+from redis_connection import redis_pool
 
 load_dotenv()
 
-FACES_CSV_FILE = "faces.csv"
-PERSONS_CSV_FILE = "persons.csv"
+FACES_CSV_FILE = "face/faces.csv"
+PERSONS_CSV_FILE = "face/persons.csv"
+FRAME_DIR = 'face/images'
 FACE_THRESHOLD = 5
 
 BLOB_HOST = os.environ.get("BLOB_HOST", "localhost")
@@ -26,12 +25,13 @@ BLOB_PORT = os.environ.get("BLOB_PORT", 30003)
 df_faces: pd.DataFrame = (
     pd.read_csv(FACES_CSV_FILE)
     if os.path.exists(FACES_CSV_FILE)
-    else pd.DataFrame(columns=["DateTime", "FrameFilePath", "Confidence", "X", "Y", "Width", "Height", "FaceID"])
+    else pd.DataFrame(columns=["timestamp", "face", "facial_area", "confidence" ,"face_id", "path"])
 )
 df_persons: pd.DataFrame = (
     pd.read_csv(PERSONS_CSV_FILE) if os.path.exists(PERSONS_CSV_FILE) else pd.DataFrame(columns=["FaceID", "Name"])
 )
 
+redis_connection = redis.Redis(connection_pool=redis_pool)
 
 def face_detection(frame) -> list[dict]:
     # Extract faces from frame
@@ -81,7 +81,7 @@ def face_detection(frame) -> list[dict]:
 
 def face_recognition(frame):
     # Extract distinct value of face ID
-    distinct_face_id = df_faces["FaceID"].dropna().unique()
+    distinct_face_id = df_faces["face_id"].dropna().unique()
 
     # Shuffle distinct face ID
     np.random.shuffle(distinct_face_id)
@@ -92,7 +92,7 @@ def face_recognition(frame):
     # Iterate through distinct face ID
     for face_id in distinct_face_id:
         # Get image paths of this face ID
-        paths = df_faces.loc[df_faces["FaceID"] == face_id]["FrameFilePath"].values
+        paths = df_faces.loc[df_faces["face_id"] == face_id]["path"].values
 
         # threshold is the minimum of number of paths and FACE_THRESHOLD
         if len(paths) < FACE_THRESHOLD:
@@ -148,6 +148,38 @@ def face_recognition(frame):
     return new_id
 
 
+def draw_info(frame, face, face_id):
+    x = face['facial_area']['x']
+    y = face['facial_area']['y']
+    w = face['facial_area']['w']
+    h = face['facial_area']['h']
+    
+    extedned_bbox=  calculate_extended_bbox(x, y, w, h, frame.shape, extend_by=20)
+    
+    # draw rectangle wrap face
+    rectangle = cv2.rectangle(
+        frame,
+        (extedned_bbox[0], extedned_bbox[1]),
+        (extedned_bbox[0] + extedned_bbox[2], extedned_bbox[1] + extedned_bbox[3]),
+        (0, 255, 0),
+        2,
+    )
+    
+    # write name on the rectangle
+    cv2.putText(
+        rectangle,
+        f"FaceID: {face_id}",
+        (extedned_bbox[0] - 10, extedned_bbox[1] - 10),
+        cv2.FONT_HERSHEY_SIMPLEX,
+        0.5,
+        (0, 255, 0),
+        2,
+    )
+
+    return rectangle
+    
+    
+
 # Save an image to a specified directory
 def save_image(frame, save_dir: str = ".", name: str = None) -> Union[str, None]:
     if name is None:
@@ -170,8 +202,14 @@ def save_image(frame, save_dir: str = ".", name: str = None) -> Union[str, None]
                 files=files,
                 timeout=60,
             )
+            
+            stored_name = response.json().get("stored_name")
+            
+            # store to redis stream
+            redis_connection.xadd("frame", {"frame": stored_name})
 
-            return response.json()
+            return image_path
+        
     except Exception as e:
         return None
 
@@ -180,6 +218,10 @@ def main_processor(frame):
     faces = face_detection(frame)
 
     for face in faces:
-        print(face)
-    else:
-        print("No face in {datetime.now()}")
+        face_id = face_recognition(frame)
+        new_frame = draw_info(frame, face)
+        save_image(new_frame, save_dir=FRAME_DIR, name=face_id)
+        
+        df_faces.loc[len(df_faces)] = {**face, "face_id": face_id}
+
+    df_faces.to_csv(FACES_CSV_FILE, index=False)

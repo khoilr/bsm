@@ -7,11 +7,12 @@ WORKDIR /app
 RUN apt-get update && apt-get install ffmpeg libsm6 libxext6  -y
 
 # Install any needed packages specified in requirements.txt
-COPY deepdetection/requirements.txt .
+COPY face/requirements.txt .
 RUN pip install -r requirements.txt
 
 # Copy the current directory contents into the container at /app
-COPY deepdetection deepdetection
+COPY face face
+COPY redis_connection redis_connection
 
 # Run the deepdetection module
-CMD ["python", "-m", "deepdetection"]
+CMD ["python", "-m", "face"]

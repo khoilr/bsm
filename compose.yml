@@ -7,7 +7,7 @@ services:
         networks:
             - bsm
         volumes:
-            - ./redis.conf:/usr/local/etc/redis/redis.conf
+            - ./redis_connection/redis.conf:/usr/local/etc/redis/redis.conf
             - ./backup/redis_data:/data
         command: redis-server /usr/local/etc/redis/redis.conf
 
@@ -81,17 +81,19 @@ services:
         volumes:
             - ./blob:/app/blob
 
-    deepdetection:
+    deepface:
         build:
             context: .
-            dockerfile: deepdetection/dockerfile
+            dockerfile: face/dockerfile
         restart: 'always'
         volumes:
-            - ./deepdetection:/app/deepdetection
+            - ./face:/app/face
         environment:
             SERVER_SCHEME: http://
             SERVER_HOST: server
             SERVER_PORT: 8000
+            BLOB_HOST: blob
+            BLOB_PORT: 7000
         networks:
             - bsm
 
