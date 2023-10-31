@@ -3,7 +3,7 @@ import json
 from fastapi import APIRouter
 from tortoise.contrib.pydantic import pydantic_model_creator
 
-from database.dao.camera import CameraDao
+from database.dao.camera import CameraDAO
 from database.models.camera import CameraModel
 
 router = APIRouter(prefix='/camera')
@@ -25,7 +25,7 @@ async def getAllCamera():
 
 @router.get('/{id}')
 async def getCameraByID(id: int):
-    camera = await CameraDao().getOne(id=id)
+    camera = await CameraDAO().get(id=id)
     if camera:
         # await Camera_Pydantic.from_tortoise_orm(camera)
         return {

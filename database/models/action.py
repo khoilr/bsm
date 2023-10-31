@@ -1,4 +1,6 @@
 from tortoise import fields, models
+import datetime
+from tortoise.queryset import QuerySet
 
 
 class ActionModel(models.Model):
@@ -12,7 +14,7 @@ class ActionModel(models.Model):
     # Relationship
     camera = fields.OneToOneField("models.ZoneModel",
                                   related_name="camera_attendance")
-    face = fields.ForeignKeyField("models.RegisteredFaceModel",
+    face = fields.ForeignKeyField("models.FaceModel",
                                   related_name="face_tracking")
     # event = fields.ForeignKeyField("models.EventModel", related_name="action_event")
     log = fields.ForeignKeyField('models.EventLogModel', 'action_log')
@@ -24,9 +26,9 @@ class ActionModel(models.Model):
         model_data = {}
         for field_name, field_object in self._meta.fields_map.items():
             value = getattr(self, field_name)
-            if isinstance(field_object, (fields.ForeignKeyField, fields.OneToOneField)):
+            if isinstance(field_object, (fields.ForeignKeyField.__class__, fields.OneToOneField.__class__)):
                 value = value.id if value else None
-            elif isinstance(value, fields.DatetimeField):
-                value = value.isoformat() if value else None
+            elif isinstance(value, datetime.datetime):  
+                value = int(round(value.timestamp())) if value else None
             model_data[field_name] = value
-        return model_data
+        return {key: value for key, value in model_data.items() if not isinstance(value, QuerySet)}

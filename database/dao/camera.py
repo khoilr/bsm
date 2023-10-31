@@ -1,8 +1,7 @@
 from tortoise.exceptions import DoesNotExist
 from typing import List, Union
 import json
-from database.models.camera import CameraModel 
-
+from database.models.camera import CameraModel
 class CameraDAO:
 
     @staticmethod
