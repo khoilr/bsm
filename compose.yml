@@ -11,6 +11,7 @@ services:
             - ./backup/redis_data:/data
         command: redis-server /usr/local/etc/redis/redis.conf
 
+<<<<<<< HEAD
     postgres:
         image: postgres
         ports:
@@ -28,6 +29,25 @@ services:
             interval: 5s
             timeout: 5s
             retries: 10
+=======
+  postgres:
+    image: postgres
+    ports:
+      - "30002:5432"
+    networks:
+      - bsm
+    # volumes:
+    #   - ./backup/postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    healthcheck:
+      test: [ 'CMD', 'pg_isready', '-U', 'postgres' ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+>>>>>>> c1b673c (client router with bearer)
 
     migrator:
         build:

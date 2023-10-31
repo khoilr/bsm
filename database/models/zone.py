@@ -1,6 +1,9 @@
 from tortoise import fields, models
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> c1b673c (client router with bearer)
 class ZoneModel(models.Model):
     """Tortoise-based zone model."""
     # Fields
