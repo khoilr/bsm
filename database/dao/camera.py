@@ -85,4 +85,4 @@ class CameraDAO:
         Returns:
             dict: Model data as JSON key-value datatype
         """
-        return json.loads(json.dumps(camera.to_json()))
+        return camera.to_json()

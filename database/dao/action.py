@@ -86,4 +86,4 @@ class ActionDAO:
         Returns:
             dict: Model data as JSON key-value datatype
         """
-        return json.loads(json.dumps(action.to_json()))
+        return action.to_json()
