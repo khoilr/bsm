@@ -18,11 +18,7 @@ class FaceDAO:
         Returns:
             RegisteredFaceModel: Face model.
         """
-        return await RegisteredFaceModel.create(
-            frame=frame,
-            picture=picture,
-            boundary=boundary
-        )
+        return await RegisteredFaceModel.create(frame=frame, picture=picture, boundary=boundary)
 
     async def get_all(self, limit: int, offset: int) -> List[RegisteredFaceModel]:
         """
@@ -37,7 +33,9 @@ class FaceDAO:
         """
         return await RegisteredFaceModel.all().offset(offset).limit(limit)
 
-    async def filter(self, frame:  Optional[str] = None, picture:  Optional[str] = None, boundary:  Optional[list[int]] = None) -> List[RegisteredFaceModel]:
+    async def filter(
+        self, frame: Optional[str] = None, picture: Optional[str] = None, boundary: Optional[list[int]] = None
+    ) -> List[RegisteredFaceModel]:
         """
         Get specific face model.
 
