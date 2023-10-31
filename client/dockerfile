@@ -1,0 +1,20 @@
+# Use an official Node.js runtime as a parent image
+FROM node
+
+# Set the working directory in the container
+WORKDIR /app
+
+# Copy package.json and package-lock.json to the container
+COPY package*.json .
+
+# Install Node.js dependencies
+RUN npm install
+
+# Copy the entire React application to the container
+COPY . .
+
+# Build the React application
+RUN npm run build
+
+# Define the command to start your React app
+CMD ["npm", "start"]
