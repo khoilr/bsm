@@ -78,7 +78,7 @@ class FileField(TextField):
         return buffer
 
 
-class RegisteredFaceModel(models.Model):
+class FaceModel(models.Model):
     """Tortoise-based log model."""
     # Fields
     face_id = fields.IntField(pk=True)
@@ -95,3 +95,14 @@ class RegisteredFaceModel(models.Model):
 
     class Meta:
         table = "Face"
+
+    def to_json(self):
+        model_data = {}
+        for field_name, field_object in self._meta.fields_map.items():
+            value = getattr(self, field_name)
+            if isinstance(field_object, (fields.ForeignKeyField, fields.OneToOneField)):
+                value = value.id if value else None
+            elif isinstance(value, fields.DatetimeField):
+                value = value.isoformat() if value else None
+            model_data[field_name] = value
+        return model_data

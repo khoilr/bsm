@@ -103,7 +103,7 @@ async def sign_up(
     return await user_dao.create(
         name=username,
         username=username,
-        password=hashed_password,
+        password=hashed_password
     )
 
 

@@ -81,19 +81,19 @@ services:
         volumes:
             - ./blob:/app/blob
 
-    deepdetection:
-        build:
-            context: .
-            dockerfile: deepdetection/dockerfile
-        restart: 'always'
-        volumes:
-            - ./deepdetection:/app/deepdetection
-        environment:
-            SERVER_SCHEME: http://
-            SERVER_HOST: server
-            SERVER_PORT: 8000
-        networks:
-            - bsm
+    # deepdetection:
+    #     build:
+    #         context: .
+    #         dockerfile: deepdetection/dockerfile
+    #     restart: 'always'
+    #     volumes:
+    #         - ./deepdetection:/app/deepdetection
+    #     environment:
+    #         SERVER_SCHEME: http://
+    #         SERVER_HOST: server
+    #         SERVER_PORT: 8000
+    #     networks:
+    #         - bsm
 
 networks:
     bsm:

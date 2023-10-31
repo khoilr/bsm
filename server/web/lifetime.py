@@ -11,7 +11,7 @@ import os
 import base64
 import socketio
 from dotenv import load_dotenv
-
+from loguru import logger
 load_dotenv()
 
 
@@ -20,23 +20,43 @@ class VideoCamera(object):
         self.video = cv2.VideoCapture(URL)
         (self.grabbed, self.frame) = self.video.read()
         self.stop_thread = False
+        self.paused = False
+        self.lock = threading.Lock()  
         self.thread = threading.Thread(target=self.update, args=())
         self.thread.start()
 
     def __del__(self):
         self.stop_thread = True
+        self.thread.join()  
         self.video.release()
         cv2.destroyAllWindows()
 
     def get_frame(self):
-        image = self.frame
-        _, jpeg = cv2.imencode(' .jpg', image)
-        return jpeg.tobytes()
+        with self.lock:
+            image = self.frame
+            _, jpeg = cv2.imencode('.jpg', image)
+            return jpeg.tobytes()
 
     def update(self):
         while not self.stop_thread:
+            with self.lock:
+                if self.paused:
+                    continue
             time.sleep(0.05)
             (self.grabbed, self.frame) = self.video.read()
+
+    def stop(self):
+        with self.lock:
+            self.stop_thread = True
+
+    def continue_thread(self):
+        with self.lock:
+            self.paused = False
+
+    def pause(self):
+        with self.lock:
+            self.paused = True
+
 
 def register_startup_event(
     app: FastAPI,
@@ -108,7 +128,6 @@ def register_socket_from_app(app: FastAPI):
         print("Client connect with id: " + sid)
         CONNECTED_SOCKETS.append(sid)
         await sio.emit('message', 'connected successfull with id' + sid)
-        # await handleConnectedCLient(sio=sio, sid=sid)
 
     @sio.event
     def disconnect(sid):
@@ -118,8 +137,8 @@ def register_socket_from_app(app: FastAPI):
     @sio.on('live_data')
     async def subscribe(sid, data):
         print("Subscribe live data event")
+        logger.info(data)
         while True and (sid in CONNECTED_SOCKETS):
-            # print('socket ', sid, " send new data")
             data = handleConnectedCLient(sio, sid)
             await sio.send(data=data)
         print('Socket with ID '+sid+" close event")

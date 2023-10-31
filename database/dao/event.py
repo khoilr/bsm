@@ -1,7 +1,7 @@
 from tortoise.exceptions import DoesNotExist
 from typing import List, Union
 import json
-from database.models.event import EventModel  # Assuming this is the import path for EventModel
+from database.models.event import EventModel 
 
 class EventDAO:
 
@@ -86,4 +86,4 @@ class EventDAO:
         Returns:
             dict: Model data as JSON key-value datatype
         """
-        return json.loads(json.dumps(event.to_json()))
+        return event.to_json()

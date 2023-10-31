@@ -1,52 +1,89 @@
-from typing import List, Optional, Union
-from tortoise.contrib.pydantic import pydantic_model_creator
-from database.models.camera import CameraModel
+from tortoise.exceptions import DoesNotExist
+from typing import List, Union
+import json
+from database.models.camera import CameraModel 
 
+class CameraDAO:
 
-class CameraDao:
-    """Class for accessing dummy table."""
-
-    async def create(self, name: str) -> None:
+    @staticmethod
+    async def get(camera_id: int) -> Union[CameraModel, None]:
         """
-        Add single dummy to session.
+        Retrieve a specific Camera by its ID.
 
-        :param name: name of a dummy.
-        """
-        await CameraModel.create(name=name)
+        Args:
+            camera_id (int): Camera ID
 
-    async def getOne(self, id: Optional[int] = None, ) -> Union[CameraModel, None]:
+        Returns:
+            Union[CameraModel, None]: Camera model or None if not found
         """
-        Get all dummy models with limit/offset pagination.
+        try:
+            return await CameraModel.get(id=camera_id)
+        except DoesNotExist:
+            return None
 
-        :param limit: limit of dummies.
-        :param offset: offset of dummies.
-        :return: stream of dummies.
+    @staticmethod
+    async def get_all() -> List[CameraModel]:
         """
-        if id:
-            query = CameraModel.filter(id=id).first()
-            return await query
-        return None
+        Retrieve all Cameras.
 
-    async def getAll(self, limit: Optional[int] = 1000, offset: Optional[int] = 0) -> \
-        List[CameraModel]:
+        Returns:
+            List[CameraModel]: List of camera models
         """
-        Get all dummy models with limit/offset pagination.
+        return await CameraModel.all()
 
-        :param limit: limit of dummies.
-        :param offset: offset of dummies.
-        :return: stream of dummies.
+    @staticmethod
+    async def filter(**kwargs) -> List[CameraModel]:
         """
-        result= await (CameraModel.all().offset(offset).limit(limit))
-        return result
+        Filter Cameras based on provided keyword arguments.
 
-    async def filter(self, name: Optional[str] = None) -> List[CameraModel]:
+        Returns:
+            List[CameraModel]: List of camera models
         """
-        Get specific dummy model.
+        return await CameraModel.filter(**kwargs)
 
-        :param name: name of dummy instance.
-        :return: dummy models.
+    @staticmethod
+    async def create(**kwargs) -> CameraModel:
         """
-        query = CameraModel.all()
-        if name:
-            query = query.filter(name=name)
-        return await query
+        Create a new Camera using provided keyword arguments.
+
+        Returns:
+            CameraModel: Camera model
+        """
+        return await CameraModel.create(**kwargs)
+
+    @staticmethod
+    async def update(camera_id: int, **kwargs) -> None:
+        """
+        Update a specific Camera using provided keyword arguments.
+
+        Args:
+            camera_id (int): Camera ID
+        """
+        camera = await CameraDAO.get(camera_id)
+        if camera:
+            await camera.update_from_dict(kwargs).save()
+
+    @staticmethod
+    async def delete(camera_id: int) -> None:
+        """
+        Delete a specific Camera by its ID.
+
+        Args:
+            camera_id (int): Camera ID
+        """
+        camera = await CameraDAO.get(camera_id)
+        if camera:
+            await camera.delete()
+
+    @staticmethod
+    def model_to_json(camera: CameraModel) -> dict:
+        """
+        Convert CameraModel instance to JSON string.
+
+        Args:
+            camera (CameraModel): Camera model
+
+        Returns:
+            dict: Model data as JSON key-value datatype
+        """
+        return json.loads(json.dumps(camera.to_json()))
