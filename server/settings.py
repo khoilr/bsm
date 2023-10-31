@@ -42,9 +42,9 @@ class Settings(BaseSettings):
     # Variables for the database
     db_host: str = "localhost"
     db_port: int = 5432
-    db_user: str = "bsm_server"
-    db_pass: str = "bsm_server"
-    db_base: str = "bsm_server"
+    db_user: str = "postgres"
+    db_pass: str = "postgres"
+    db_base: str = "postgres"
     db_echo: bool = False
 
     # Variables for Redis

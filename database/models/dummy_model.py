@@ -6,6 +6,7 @@ class DummyModel(models.Model):
 
     id = fields.IntField(pk=True)
     name = fields.CharField(max_length=200)  # noqa: WPS432
+    description=fields.CharField(max_length=155)
 
     def __str__(self) -> str:
         return self.name

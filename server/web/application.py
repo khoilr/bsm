@@ -41,6 +41,7 @@ def get_app() -> FastAPI:
     register_socket_from_app(app)
     # Main router for the API.
     app.include_router(router=api_router, prefix="/api")
+    
     # Configures tortoise orm.
     register_tortoise(
         app,

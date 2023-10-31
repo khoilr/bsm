@@ -1,50 +1,97 @@
 from tortoise import fields, models
-from typing import List, Union, Type, Optional, Any
-import json
+import os
+import io
+import uuid
+from tortoise.fields import TextField
+from io import IOBase
 
-from tortoise.fields.base import Field
-from tortoise.models import Model
 
-
-class IntArrayField(Field, list):
+def is_binary_file(file_path: str) -> bool:
     """
-    Int Array field specifically for PostgreSQL.
+    Check if the file is stored as binary file.
 
-    This field can store list of int values.
+    Args:
+        file_path (str): Path to file
+
+    Returns:
+        bool: Binary file or not
     """
+    TEXTCHARS = bytearray({7, 8, 9, 10, 12, 13, 27} | set(range(0x20, 0x100)) - {0x7f})
+    with open(file_path, 'rb') as f:
+        content = f.read(1024)
+        return bool(content.translate(None, TEXTCHARS))
 
-    SQL_TYPE = "int[]"
 
-    def __init__(self, **kwargs):
+class ConfigurationError(Exception):
+    """Configuration Error."""
+
+    def __init__(self, message):
+        super().__init__(message)
+
+
+class FileField(TextField):
+    """Alternative classes for image storing using binary values."""
+
+    def __init__(self, *, upload_root: str, **kwargs):
         super().__init__(**kwargs)
+        if not os.path.exists(self.upload_root):
+            raise ConfigurationError('No such directory: {}'.format(self.upload_root))
 
-    def to_db_value(
-        self, value: List[int], instance: "Union[Type[Model], Model]"
-    ) -> Optional[List[int]]:
-        return value
+        self.upload_root = upload_root
 
-    def to_python_value(self, value: Any) -> Optional[List[int]]:
-        if isinstance(value, str):
-            array = json.loads(value.replace("'", '"'))
-            return [int(x) for x in array]
-        return value
-    
+    def _is_binary(self, file: IOBase):
+        return not isinstance(file, io.TextIOBase)
+
+    def to_db_value(self, value: IOBase, instance):
+        is_binary = self._is_binary(value)
+        if hasattr(value, 'name'):
+            name = value.name
+        else:
+            name = str(uuid.uuid4())
+
+        if os.path.isfile(os.path.join(self.upload_root, name)):
+            name = '{}-{}'.format(str(uuid.uuid4()), name)
+
+        mode = 'w' if not is_binary else 'wb'
+
+        path = os.path.join(self.upload_root, name)
+
+        with open(path, mode) as f:
+            f.write(value.read())
+
+        return path
+
+    def to_python_value(self, value: str):
+        if is_binary_file(value):
+            mode = 'rb'
+            buffer = io.BytesIO()
+        else:
+            mode = 'r'
+            buffer = io.StringIO()
+
+        buffer.name = os.path.split(value)[-1]
+
+        with open(value, mode) as f:
+            buffer.write(f.read())
+
+        buffer.seek(0)
+        return buffer
+
+
 class RegisteredFaceModel(models.Model):
-    """Tortoise-based face model."""
+    """Tortoise-based log model."""
     # Fields
     face_id = fields.IntField(pk=True)
-    frame = fields.TextField()
-    picture = fields.TextField()
-    boundary = IntArrayField()
+    FrameFilePath = fields.TextField()
+    X = fields.FloatField()
+    Y = fields.FloatField()
+    Width = fields.IntField()
+    Height = fields.IntField()
     created_at = fields.DatetimeField(auto_now_add=True)
     updated_at = fields.DatetimeField(auto_now=True)
 
-
-    #Relationship
-    person = fields.ForeignKeyField("models.PersonModel", related_name="personmodel_face")
-
-    def __str__(self):
-        return self.picture
+    # relationship
+    person = fields.ForeignKeyField("models.PersonModel", related_name="person_model")
 
     class Meta:
         table = "Face"
