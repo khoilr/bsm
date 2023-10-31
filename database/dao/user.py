@@ -69,7 +69,7 @@ class UserDAO:
         """
         query = UserModel.all()
         if id:
-            query = query.filter(id=id).first()
+            query = query.filter(user_id=id).first()
         elif username:
             query = query.filter(username=username).first()
         else:

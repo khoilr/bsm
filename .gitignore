@@ -4,3 +4,6 @@ backups
 *.pyc
 *.pyc
 *.rdb
+env
+venv
+backup

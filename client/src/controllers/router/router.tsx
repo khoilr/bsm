@@ -16,7 +16,6 @@ import ActionDetailPage from "../../pages/action/slug";
 import ZonePage from "../../pages/zone";
 
 
-
 export const routes: RouteObject[] = [
 
     {
