@@ -24,7 +24,7 @@ services:
             POSTGRES_PASSWORD: postgres
             POSTGRES_DB: postgres
         healthcheck:
-            test: [ 'CMD', 'pg_isready', '-U', 'postgres' ]
+            test: ['CMD', 'pg_isready', '-U', 'postgres']
             interval: 5s
             timeout: 5s
             retries: 10
@@ -94,6 +94,8 @@ services:
             SERVER_PORT: 8000
             BLOB_HOST: blob
             BLOB_PORT: 7000
+            REDIS_HOST: redis
+            REDIS_PORT: 6379
         networks:
             - bsm
 
@@ -108,7 +110,7 @@ services:
         networks:
             - bsm
         ports:
-          - '30004:3000'
+            - '30004:3000'
 
 networks:
     bsm:
