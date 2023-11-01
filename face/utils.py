@@ -15,23 +15,9 @@ from skimage import io
 
 load_dotenv()
 
-FACES_CSV_FILE = "face/faces.csv"
-PERSONS_CSV_FILE = "face/persons.csv"
-FRAME_DIR = 'face/images'
-FACE_THRESHOLD = 5
 
 BLOB_HOST = os.environ.get("BLOB_HOST", "localhost")
 BLOB_PORT = os.environ.get("BLOB_PORT", 30003)
-
-# Init DataFrame
-df_faces: pd.DataFrame = (
-    pd.read_csv(FACES_CSV_FILE)
-    if os.path.exists(FACES_CSV_FILE)
-    else pd.DataFrame(columns=["timestamp", "face", "facial_area", "confidence" ,"face_id", "path"])
-)
-df_persons: pd.DataFrame = (
-    pd.read_csv(PERSONS_CSV_FILE) if os.path.exists(PERSONS_CSV_FILE) else pd.DataFrame(columns=["FaceID", "Name"])
-)
 
 redis_connection = redis.Redis(connection_pool=redis_pool)
 

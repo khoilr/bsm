@@ -77,7 +77,7 @@ services:
             dockerfile: blob/dockerfile
         restart: 'always'
         ports:
-            - '30003:8000'
+            - '30003:7000'
         volumes:
             - ./blob:/app/blob
 

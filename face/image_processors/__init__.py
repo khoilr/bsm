@@ -11,15 +11,15 @@ def calculate_extended_bbox(x, y, w, h, frame_shape, extend_by=20) -> tuple:
 
 
 def draw_info(frame, face):
-    x = face['facial_area']['x']
-    y = face['facial_area']['y']
-    w = face['facial_area']['w']
-    h = face['facial_area']['h']
-    
-    extended_bbox=  calculate_extended_bbox(x, y, w, h, frame.shape, extend_by=20)
-    color = (0, 255, 0)
+    x = face["facial_area"]["x"]
+    y = face["facial_area"]["y"]
+    w = face["facial_area"]["w"]
+    h = face["facial_area"]["h"]
+
+    extended_bbox = calculate_extended_bbox(x, y, w, h, frame.shape, extend_by=20)
+    color = (255,255,0)
     thickness = 2
-    
+
     # draw rectangle wrap face
     image = cv2.rectangle(
         frame,
@@ -28,12 +28,11 @@ def draw_info(frame, face):
         color,
         thickness,
     )
-    
+
     # write name on the rectangle
     image = cv2.putText(
-       image
-     ,
-        {face['face_id']},
+        image,
+        str(face["face_id"]),
         (extended_bbox[0] - 10, extended_bbox[1] - 10),
         cv2.FONT_HERSHEY_SIMPLEX,
         0.5,
