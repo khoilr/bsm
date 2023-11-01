@@ -46,10 +46,8 @@ def get_face_id(face: dict, df_faces: pd.DataFrame) -> int:
         # threshold is the minimum of number of paths and FACE_THRESHOLD
         if len(paths) < FACE_THRESHOLD:
             threshold = len(paths)
-            threshold_distance = 0.5
         else:
             threshold = FACE_THRESHOLD
-            threshold_distance = None
 
         # count_true is the number of paths that are verified as the same person;
         count_true = 0
@@ -64,31 +62,6 @@ def get_face_id(face: dict, df_faces: pd.DataFrame) -> int:
                 count_true += 1
             else:
                 count_false += 1
-
-            # # Verify similarity between a pair of images using DeepFace library
-            # result = DeepFace.verify(
-            #     frame,
-            #     path,
-            #     model_name="ArcFace",
-            #     detector_backend="opencv",
-            #     enforce_detection=False,
-            # )
-
-            # # When threshold distance is not None, then verify by distance. Otherwise, verify by verified
-            # if threshold_distance is not None:
-            #     # If distance is less than threshold_distance, count_true += 1
-            #     # Else count_false += 1
-            #     if result["distance"] < threshold_distance:
-            #         count_true += 1
-            #     else:
-            #         count_false += 1
-            # else:
-            #     # If verified is True, count_true += 1
-            #     # Else count_false += 1
-            #     if result["verified"]:
-            #         count_true += 1
-            #     else:
-            #         count_false += 1
 
             # If count_true is equal to threshold, return face_id
             # Else if count_false is equal to threshold, break
