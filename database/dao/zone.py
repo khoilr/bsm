@@ -1,50 +1,93 @@
-from typing import List, Optional, Union
-
+from tortoise.exceptions import DoesNotExist
+from typing import List, Union
+import json
 from database.models.zone import ZoneModel
 
+class ZoneDAO:
 
-class ZoneDao:
-    """Class for accessing dummy table."""
-
-    async def create(self, name: str) -> None:
+    @staticmethod
+    async def get(zone_id: int) -> Union[ZoneModel, None]:
         """
-        Add single dummy to session.
+        Retrieve a specific Zone by its ID.
 
-        :param name: name of a dummy.
-        """
-        await ZoneModel.create(name=name)
+        Args:
+            zone_id (int): Zone id
 
-    async def getOne(self, id: Optional[int]=None,) -> Union[ZoneModel, None]:
+        Returns:
+            Union[ZoneModel, None]: Zone model or None if not found
         """
-        Get all dummy models with limit/offset pagination.
+        try:
+            return await ZoneModel.get(zone_id=zone_id)
+        except DoesNotExist:
+            return None
 
-        :param limit: limit of dummies.
-        :param offset: offset of dummies.
-        :return: stream of dummies.
+    @staticmethod
+    async def get_all() -> List[ZoneModel]:
         """
-        if id:
-            query = ZoneModel.filter(id=id).first()
-            return await query
-        return None
+        Retrieve all Zones.
 
-    async def getAll(self, limit: int, offset: int) -> List[ZoneModel]:
+        Returns:
+            List[ZoneModel]: list of zone models
         """
-        Get all dummy models with limit/offset pagination.
+        return await ZoneModel.all()
 
-        :param limit: limit of dummies.
-        :param offset: offset of dummies.
-        :return: stream of dummies.
+    @staticmethod
+    async def filter(**kwargs) -> List[ZoneModel]:
         """
-        return await ZoneModel.all().offset(offset).limit(limit)
+        Filter Zones based on provided keyword arguments.
 
-    async def filter(self, name: Optional[str] = None) -> List[ZoneModel]:
+        Returns:
+            List[ZoneModel]: List of zone models
         """
-        Get specific dummy model.
+        return await ZoneModel.filter(**kwargs)
 
-        :param name: name of dummy instance.
-        :return: dummy models.
+    @staticmethod
+    async def create(**kwargs) -> ZoneModel:
         """
-        query = ZoneModel.all()
-        if name:
-            query = query.filter(name=name)
-        return await query
+        Create a new Zone using provided keyword arguments.
+
+        Returns:
+            ZoneModel: Zone model
+        """
+        return await ZoneModel.create(**kwargs)
+
+    @staticmethod
+    async def update(zone_id: int, **kwargs) -> None:
+        """
+        Update a specific Zone using provided keyword arguments.
+
+        Args:
+            zone_id (int): Zone id
+        """
+        zone = await ZoneDAO.get(zone_id)
+        if zone:
+            await zone.update_from_dict(kwargs).save()
+
+    @staticmethod
+    async def delete(zone_id: int) -> None:
+        """
+        Delete a specific Zone by its ID.
+
+        Args:
+            zone_id (int): Zone id
+        """
+        zone = await ZoneDAO.get(zone_id)
+        if zone:
+            await zone.delete()
+
+    @staticmethod
+    def model_to_json(zone: ZoneModel) -> dict:
+        """
+        Convert ZoneModel instance to JSON string.
+
+        Args:
+            zone (ZoneModel): Zone model
+
+        Returns:
+            dict: Model data as JSON key-value datatype
+        """
+        return zone.to_json()
+
+
+
+

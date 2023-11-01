@@ -2,13 +2,15 @@ import json
 
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 from fastapi.security import OAuth2PasswordRequestForm
-
+import datetime
+from database.dao.camera import CameraDAO
+from database.dao.person import PersonDAO
 from database.dao.user import UserDAO
 from database.models.user import UserModel
 from server.utils import authentication
 from server.utils.authentication import password as auth_password
 from server.web.api.user.schema import UserOutputDTO
-
+from loguru import logger
 router = APIRouter(prefix="/auth")
 
 
@@ -103,7 +105,7 @@ async def sign_up(
     return await user_dao.create(
         name=username,
         username=username,
-        password=hashed_password,
+        password=hashed_password
     )
 
 
@@ -119,3 +121,7 @@ async def me(user: UserModel = Depends(authentication.get_current_user)) -> User
         UserModel: User object
     """
     return user
+
+
+
+
