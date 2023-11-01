@@ -10,6 +10,8 @@ import requests
 from deepface import DeepFace
 from dotenv import load_dotenv
 from redis_connection import redis_pool
+from skimage import io
+
 
 load_dotenv()
 
@@ -32,51 +34,6 @@ df_persons: pd.DataFrame = (
 )
 
 redis_connection = redis.Redis(connection_pool=redis_pool)
-
-def face_detection(frame) -> list[dict]:
-    # Extract faces from frame
-    face_objs = DeepFace.extract_faces(
-        frame,
-        detector_backend="opencv",
-        enforce_detection=False,
-        align=True,
-    )
-
-    return [{**face, "timestamp": int(datetime.now().timestamp())} for face in face_objs if face["confidence"] > 0]
-
-    # Iterate through faces
-    for face in face_objs:
-        # Skip if confidence is 0 or infinity
-
-        if face["confidence"] <= 0:
-            continue
-
-        # Set is_change to True
-        is_change = True
-
-        # Save frame to file
-        frame_path = save_image(frame=frame)
-
-        # Create row to add to df_faces
-        new_face_row = {
-            "Datetime": int(datetime.now().timestamp()),
-            "FrameFilePath": frame_path,
-            "Confidence": face["confidence"],
-            "X": (face["facial_area"]["x"]),
-            "Y": face["facial_area"]["y"],
-            "Width": face["facial_area"]["w"],
-            "Height": face["facial_area"]["h"],
-        }
-
-        face_id = face_recognition(frame)
-
-        new_face_row["FaceID"] = face_id
-        df_faces.loc[len(df_faces)] = new_face_row
-
-    # detected successfully
-    if is_change:
-        # handleFaceDetected(new_face_row)
-        df_faces.to_csv(FACES_CSV_FILE, index=False)
 
 
 def face_recognition(frame):
@@ -146,39 +103,6 @@ def face_recognition(frame):
     df_persons.to_csv(PERSONS_CSV_FILE, index=False)
 
     return new_id
-
-
-def draw_info(frame, face, face_id):
-    x = face['facial_area']['x']
-    y = face['facial_area']['y']
-    w = face['facial_area']['w']
-    h = face['facial_area']['h']
-    
-    extedned_bbox=  calculate_extended_bbox(x, y, w, h, frame.shape, extend_by=20)
-    
-    # draw rectangle wrap face
-    rectangle = cv2.rectangle(
-        frame,
-        (extedned_bbox[0], extedned_bbox[1]),
-        (extedned_bbox[0] + extedned_bbox[2], extedned_bbox[1] + extedned_bbox[3]),
-        (0, 255, 0),
-        2,
-    )
-    
-    # write name on the rectangle
-    cv2.putText(
-        rectangle,
-        f"FaceID: {face_id}",
-        (extedned_bbox[0] - 10, extedned_bbox[1] - 10),
-        cv2.FONT_HERSHEY_SIMPLEX,
-        0.5,
-        (0, 255, 0),
-        2,
-    )
-
-    return rectangle
-    
-    
 
 # Save an image to a specified directory
 def save_image(frame, save_dir: str = ".", name: str = None) -> Union[str, None]:

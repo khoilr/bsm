@@ -10,3 +10,4 @@ black
 python-dotenv
 requests-toolbelt
 redis
+scikit-image

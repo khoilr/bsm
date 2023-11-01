@@ -2,9 +2,13 @@ import os
 
 import cv2
 from loguru import logger
-
-from face.utils import main_processor
+import os 
+from dotenv import load_env
 from face.face_handler import *
+from face.face_processors.face_detection import detect_faces
+from face.face_processors.face_identification import identify_face
+
+load_env()
 
 # Constants
 LOG_FILE = "camera.log"
@@ -21,9 +25,16 @@ FACE_THRESHOLD = 5
 # Configure logger
 logger.add(LOG_FILE, rotation="500 MB")
 
+def main_processor (frame) : 
+     faces = detect_faces(frame)
+     
+     for face in faces:
+         print(face)
 
 # Main function to capture frames, process faces, and save results
 def main():
+    """Handle errors and restart the camera if necessary."""
+
     frame_counter = 0
     read_frame_failures_counter = 0
     cap_open_counter = 0

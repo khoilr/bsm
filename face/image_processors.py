@@ -16,26 +16,29 @@ def draw_info(frame, face):
     w = face['facial_area']['w']
     h = face['facial_area']['h']
     
-    extedned_bbox=  calculate_extended_bbox(x, y, w, h, frame.shape, extend_by=20)
+    extended_bbox=  calculate_extended_bbox(x, y, w, h, frame.shape, extend_by=20)
+    color = (0, 255, 0)
+    thickness = 2
     
     # draw rectangle wrap face
-    rectangle = cv2.rectangle(
+    image = cv2.rectangle(
         frame,
-        (extedned_bbox[0], extedned_bbox[1]),
-        (extedned_bbox[0] + extedned_bbox[2], extedned_bbox[1] + extedned_bbox[3]),
-        (0, 255, 0),
-        2,
+        (extended_bbox[0], extended_bbox[1]),
+        (extended_bbox[0] + extended_bbox[2], extended_bbox[1] + extended_bbox[3]),
+        color,
+        thickness,
     )
     
     # write name on the rectangle
-    cv2.putText(
-        rectangle,
-        f"FaceID: {face_id}",
-        (extedned_bbox[0] - 10, extedned_bbox[1] - 10),
+    image = cv2.putText(
+       image
+     ,
+        {face['face_id']},
+        (extended_bbox[0] - 10, extended_bbox[1] - 10),
         cv2.FONT_HERSHEY_SIMPLEX,
         0.5,
-        (0, 255, 0),
-        2,
+        color,
+        thickness,
     )
 
-    return rectangle
+    return image
