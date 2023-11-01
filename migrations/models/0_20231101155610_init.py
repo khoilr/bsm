@@ -11,21 +11,21 @@ async def upgrade(db: BaseDBAsyncClient) -> str:
 COMMENT ON TABLE "dummymodel" IS 'Model for demo purpose.';
 CREATE TABLE IF NOT EXISTS "Person" (
     "person_id" SERIAL NOT NULL PRIMARY KEY,
-    "name" VARCHAR(255) NOT NULL,
-    "gender" INT NOT NULL,
-    "dob" TIMESTAMPTZ NOT NULL,
-    "phone" VARCHAR(15) NOT NULL,
+    "name" VARCHAR(255),
+    "gender" INT,
+    "dob" TIMESTAMPTZ,
+    "phone" VARCHAR(15),
     "created_at" TIMESTAMPTZ NOT NULL  DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMPTZ NOT NULL  DEFAULT CURRENT_TIMESTAMP
 );
 COMMENT ON TABLE "Person" IS 'Tortoise-based log model.';
 CREATE TABLE IF NOT EXISTS "Face" (
     "face_id" SERIAL NOT NULL PRIMARY KEY,
-    "FrameFilePath" TEXT NOT NULL,
-    "X" DOUBLE PRECISION NOT NULL,
-    "Y" DOUBLE PRECISION NOT NULL,
-    "Width" INT NOT NULL,
-    "Height" INT NOT NULL,
+    "FrameFilePath" TEXT,
+    "X" DOUBLE PRECISION,
+    "Y" DOUBLE PRECISION,
+    "Width" INT,
+    "Height" INT,
     "created_at" TIMESTAMPTZ NOT NULL  DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMPTZ NOT NULL  DEFAULT CURRENT_TIMESTAMP,
     "person_id" INT NOT NULL REFERENCES "Person" ("person_id") ON DELETE CASCADE
@@ -59,10 +59,10 @@ CREATE TABLE IF NOT EXISTS "AttendanceTracking" (
 COMMENT ON TABLE "AttendanceTracking" IS 'Tortoise-based log model.';
 CREATE TABLE IF NOT EXISTS "Camera" (
     "id" SERIAL NOT NULL PRIMARY KEY,
-    "name" VARCHAR(255) NOT NULL,
-    "description" VARCHAR(256) NOT NULL,
-    "connect_uri" VARCHAR(256) NOT NULL,
-    "type" INT NOT NULL,
+    "name" VARCHAR(255),
+    "description" VARCHAR(256),
+    "connect_uri" VARCHAR(256),
+    "type" INT,
     "created_at" TIMESTAMPTZ NOT NULL  DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMPTZ NOT NULL  DEFAULT CURRENT_TIMESTAMP,
     "zone_id" INT NOT NULL REFERENCES "Zone" ("zone_id") ON DELETE CASCADE
@@ -78,15 +78,15 @@ CREATE TABLE IF NOT EXISTS "Log" (
 COMMENT ON TABLE "Log" IS 'Tortoise-based log model.';
 CREATE TABLE IF NOT EXISTS "Event" (
     "id" SERIAL NOT NULL PRIMARY KEY,
-    "description" VARCHAR(255) NOT NULL,
+    "description" VARCHAR(255),
     "created_at" TIMESTAMPTZ NOT NULL  DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMPTZ NOT NULL  DEFAULT CURRENT_TIMESTAMP
 );
 COMMENT ON TABLE "Event" IS 'Tortoise-based log model.';
 CREATE TABLE IF NOT EXISTS "EventLog" (
     "id" SERIAL NOT NULL PRIMARY KEY,
-    "video_url" VARCHAR(255) NOT NULL,
-    "image_id" VARCHAR(255) NOT NULL,
+    "video_url" VARCHAR(255),
+    "image_id" VARCHAR(255),
     "created_at" TIMESTAMPTZ NOT NULL  DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMPTZ NOT NULL  DEFAULT CURRENT_TIMESTAMP,
     "event_id" INT NOT NULL REFERENCES "Event" ("id") ON DELETE CASCADE,

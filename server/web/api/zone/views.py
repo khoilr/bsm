@@ -1,11 +1,11 @@
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
-from database.dao.camera import CameraDAO
+from database.dao.zone import ZoneDAO
 from pydantic import BaseModel, Field
 from datetime import datetime
 from server.web.api.utils import removeNoneParams
 
-router = APIRouter(prefix="/camera")
+router = APIRouter(prefix="/zone")
 
 
 # class PersonDTO(BaseModel):
@@ -16,24 +16,24 @@ router = APIRouter(prefix="/camera")
 
 
 @router.get("/")
-async def getAllCamera():
-    cameras = await CameraDAO.get_all()
+async def getAllZone():
+    zones = await ZoneDAO.get_all()
     return JSONResponse(
-        {"count": cameras.__len__(), "data": [camera.to_json() for camera in cameras]}
+        {"count": zones.__len__(), "data": [zone.to_json() for zone in zones]}
     )
 
 
 @router.get("/{id}")
 async def getCameraByID(id: str):
     try:
-        cameraID = int(id)
-        camera = await CameraDAO.get(cameraID)
-        if camera:
-            return JSONResponse(camera.to_json())
+        zoneID = int(id)
+        zone = await ZoneDAO.get(zoneID)
+        if zone:
+            return JSONResponse(zone.to_json())
         else:
             return JSONResponse(
                 status_code=400,
-                content={"status": 400, "msg": f'Not found camera with ID "{id}"'},
+                content={"status": 400, "msg": f'Not found zone with ID "{id}"'},
             )
     except Exception as e:
         return JSONResponse(

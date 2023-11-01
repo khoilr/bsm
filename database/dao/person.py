@@ -1,6 +1,5 @@
 from tortoise.exceptions import DoesNotExist
 from typing import List, Union
-import json
 from database.models.person import PersonModel  
 
 class PersonDAO:
@@ -52,7 +51,7 @@ class PersonDAO:
         return await PersonModel.create(**kwargs)
 
     @staticmethod
-    async def update(person_id: int, **kwargs) -> None:
+    async def update(person_id: int, **kwargs):
         """
         Update a specific Person using provided keyword arguments.
 
@@ -61,10 +60,13 @@ class PersonDAO:
         """
         person = await PersonDAO.get(person_id)
         if person:
-            await person.update_from_dict(kwargs).save()
+            updatedPerson = await person.update_from_dict(kwargs)
+            updatedPerson.save()
+            return updatedPerson
+        return None
 
     @staticmethod
-    async def delete(person_id: int) -> None:
+    async def delete(person_id: int) :
         """
         Delete a specific Person by its ID.
 
@@ -74,7 +76,9 @@ class PersonDAO:
         person = await PersonDAO.get(person_id)
         if person:
             await person.delete()
-
+            return person
+        return None
+    
     @staticmethod
     def model_to_json(person: PersonModel) -> dict:
         """
