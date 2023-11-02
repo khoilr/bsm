@@ -1,39 +1,37 @@
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
-from database.dao.camera import CameraDAO
+from database.dao.event import EventDAO
 from pydantic import BaseModel, Field
 from datetime import datetime
 from server.web.api.utils import removeNoneParams
 
-router = APIRouter(prefix="/camera")
+router = APIRouter(prefix="/event")
 
 
-# class PersonDTO(BaseModel):
-#     name: str = Field(..., description="This field must not be empty")
-#     gender: int = Field(0)
-#     dob: datetime | None = Field(None)
-#     phone: str | None = Field(None)
-
+class EventDTO(BaseModel):
+    name :str = Field(...) 
+    
 
 @router.get("/")
-async def getAllCamera():
-    cameras = await CameraDAO.get_all()
+async def getAllEvent():
+    events = await EventDAO.get_all()
+    print([event.to_json() for event in events])
     return JSONResponse(
-        {"count": cameras.__len__(), "data": [camera.to_json() for camera in cameras]}
+        {"count": events.__len__(), "data": [event.to_json() for event in events]}
     )
 
 
 @router.get("/{id}")
-async def getCameraByID(id: str):
+async def getEventByID(id: str):
     try:
-        cameraID = int(id)
-        camera = await CameraDAO.get(cameraID)
-        if camera:
-            return JSONResponse(camera.to_json())
+        eventID = int(id)
+        event = await EventDAO.get(eventID)
+        if event:
+            return JSONResponse(event.to_json())
         else:
             return JSONResponse(
                 status_code=400,
-                content={"status": 400, "msg": f'Not found camera with ID "{id}"'},
+                content={"status": 400, "msg": f'Not found event with ID "{id}"'},
             )
     except Exception as e:
         return JSONResponse(
@@ -45,26 +43,23 @@ async def getCameraByID(id: str):
         )
 
 
-# @router.post("/")
-# async def createPerson(person: PersonDTO):
-#     try:
-#         params = {
-#             "name": person.name,
-#             "gender": person.gender,
-#             "dob": person.dob,
-#             "phone": person.phone,
-#         }
-#         print(removeNoneParams(params=params))
-#         createdUser = await PersonDAO.create(**removeNoneParams(params=params))
-#         if createdUser:
-#             return JSONResponse(status_code=201, content=createdUser.to_json())
-#     except Exception as e:
-#         return JSONResponse(
-#             status_code=400, content={"status": 400, "msg": e.__str__()}
-#         )
+@router.post("/")
+async def createEvent(event: EventDTO):
+    try:
+        params = {
+            "description": event.name,
+        }
+        print(removeNoneParams(params=params))
+        createdEvent = await EventDAO.create(**removeNoneParams(params=params))
+        if createdEvent:
+            return JSONResponse(status_code=201, content=createdEvent.to_json())
+    except Exception as e:
+        return JSONResponse(
+            status_code=400, content={"status": 400, "msg": e.__str__()}
+        )
 
 # @router.put("/{id}")
-# async def updatePerson(person: PersonDTO,id:str):
+# async def updatePerson(person: EventDTO,id:str):
 #     try:
 #         personId = int(id)
 #         params = {
@@ -74,7 +69,7 @@ async def getCameraByID(id: str):
 #             "phone": person.phone,
 #         }
 #         print(removeNoneParams(params=params))
-#         updatedPerson=await PersonDAO.update(person_id=personId,**removeNoneParams(params))    
+#         updatedPerson=await EventDAO.update(person_id=personId,**removeNoneParams(params))    
 #         if updatedPerson:           
 #             return JSONResponse(status_code=200, content=updatedPerson.to_json())
 #         else:
@@ -88,7 +83,7 @@ async def getCameraByID(id: str):
 # async def deletePersonByID(id: str):
 #     try:
 #         personID=int(id)
-#         deletedUser = await PersonDAO.delete(person_id=personID)
+#         deletedUser = await EventDAO.delete(person_id=personID)
         
 #         if deletedUser:
 #             return JSONResponse(status_code=200, content={

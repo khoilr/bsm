@@ -75,9 +75,9 @@ async def hanldeDetection(
         # print(data)
         jsonData=json.loads(data)
         print('Json data:',jsonData)
-        # data = await req.json()
+        
         # handle data receive
-        dateTime = dt.fromtimestamp(int(data['Datetime']))
+        dateTime = dt.fromtimestamp(int(jsonData['Datetime']))
         # fileName = str(data['FrameFilePath']).split('/').pop()
         # faceID = int(data['FaceID'])
         # respond = sendTelegramMessage(
@@ -97,7 +97,9 @@ async def hanldeDetection(
         print("DOne")
 
     except Exception as e:
-        return JSONResponse({
+        print(e.__cause__)
+        return JSONResponse(
+            status_code=200, content={
             'status': 400,
             "msg": 'Error hanlde data',
             'error:': e.__str__(),

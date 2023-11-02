@@ -1,51 +1,93 @@
-from typing import List, Optional, Union
-
-from database.models.person import PersonModel
-
+from tortoise.exceptions import DoesNotExist
+from typing import List, Union
+from database.models.person import PersonModel  
 
 class PersonDAO:
-    """Class for accessing person table."""
 
-    async def create(self, person_name: str) -> PersonModel:
+    @staticmethod
+    async def get(person_id: int) -> Union[PersonModel, None]:
         """
-        Create new person object.
+        Retrieve a specific Person by its ID.
 
         Args:
-            person_name (str): name of person
+            person_id (int): Person id
 
         Returns:
-            PersonModel: person object
+            Union[PersonModel, None]: Person model or None if not found
         """
-        return await PersonModel.create(person_name=person_name)
-
-    async def get_all(self, limit: int, offset: int) -> List[PersonModel]:
-        """
-        Get all person models with limit/offset pagination.
-
-        Args:
-            limit (int): limit of dummies.
-            offset (int): offset of dummies.
-
-        Returns:
-            List[PersonModel]: all person.
-        """
-        return await PersonModel.all().offset(offset).limit(limit)
-
-    async def get(
-        self,
-        person_name: Optional[str] = None,
-    ) -> Union[PersonModel, None]:
-        """
-        Get specific person model.
-
-        Args:
-            person_name (Optional[str], optional): person name. Defaults to None.
-
-        Returns:
-            Union[PersonModel, None]: person object, return None if none exists
-        """
-        if person_name:
-            query = PersonModel.all().filter(person_name=person_name).first()
-        else:
+        try:
+            return await PersonModel.get(person_id=person_id)
+        except DoesNotExist:
             return None
-        return await query
+
+    @staticmethod
+    async def get_all() -> List[PersonModel]:
+        """
+        Retrieve all Persons.
+
+        Returns:
+            List[PersonModel]: List of person models
+        """
+        return await PersonModel.all()
+
+    @staticmethod
+    async def filter(**kwargs) -> List[PersonModel]:
+        """
+        Filter Persons based on provided keyword arguments.
+
+        Returns:
+            List[PersonModel]: List of person models
+        """
+        return await PersonModel.filter(**kwargs)
+
+    @staticmethod
+    async def create(**kwargs) -> PersonModel:
+        """
+        Create a new Person using provided keyword arguments.
+
+        Returns:
+            PersonModel: Person model
+        """
+        return await PersonModel.create(**kwargs)
+
+    @staticmethod
+    async def update(person_id: int, **kwargs):
+        """
+        Update a specific Person using provided keyword arguments.
+
+        Args:
+            person_id (int): Person id
+        """
+        person = await PersonDAO.get(person_id)
+        if person:
+            updatedPerson = await person.update_from_dict(kwargs)
+            updatedPerson.save()
+            return updatedPerson
+        return None
+
+    @staticmethod
+    async def delete(person_id: int) :
+        """
+        Delete a specific Person by its ID.
+
+        Args:
+            person_id (int): Person id
+        """
+        person = await PersonDAO.get(person_id)
+        if person:
+            await person.delete()
+            return person
+        return None
+    
+    @staticmethod
+    def model_to_json(person: PersonModel) -> dict:
+        """
+        Convert PersonModel instance to JSON string.
+
+        Args:
+            person (PersonModel): Person model
+
+        Returns:
+            dict: Model data as JSON key-value datatype
+        """
+        return person.to_json()

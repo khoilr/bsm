@@ -1,41 +1,49 @@
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
-from database.dao.camera import CameraDAO
+from database.dao.event_log import EventLogDAO
+from database.dao.event import EventDAO
+from database.dao.face import FaceDAO
 from pydantic import BaseModel, Field
 from datetime import datetime
+from typing import Optional
 from server.web.api.utils import removeNoneParams
 
-router = APIRouter(prefix="/camera")
+router = APIRouter(prefix="/face")
 
 
-# class PersonDTO(BaseModel):
-#     name: str = Field(..., description="This field must not be empty")
-#     gender: int = Field(0)
-#     dob: datetime | None = Field(None)
-#     phone: str | None = Field(None)
+class FaceDTO(BaseModel):
+    path: str | None = Field(None)
+    x: float | None = Field(None)
+    y: float | None = Field(None)
+    width: int | None = Field(None)
+    height: int | None = Field(None)
+    person_id: int | None = Field(None)
 
 
 @router.get("/")
-async def getAllCamera():
-    cameras = await CameraDAO.get_all()
+async def getAllFaces():
+    faces = await FaceDAO.get_all()
     return JSONResponse(
-        {"count": cameras.__len__(), "data": [camera.to_json() for camera in cameras]}
+        {"count": faces.__len__(), "data": [face.to_json() for face in faces]}
     )
 
 
 @router.get("/{id}")
-async def getCameraByID(id: str):
+async def getFaceByID(
+    id: str,
+):
     try:
-        cameraID = int(id)
-        camera = await CameraDAO.get(cameraID)
-        if camera:
-            return JSONResponse(camera.to_json())
+        faceID = int(id)
+        face = await FaceDAO.get(faceID)
+        if face:
+            return JSONResponse(face.to_json())
         else:
             return JSONResponse(
                 status_code=400,
-                content={"status": 400, "msg": f'Not found camera with ID "{id}"'},
+                content={"status": 400, "msg": f"Not found face with ID '{id}'"},
             )
     except Exception as e:
+        
         return JSONResponse(
             status_code=400,
             content={
@@ -45,26 +53,32 @@ async def getCameraByID(id: str):
         )
 
 
-# @router.post("/")
-# async def createPerson(person: PersonDTO):
-#     try:
-#         params = {
-#             "name": person.name,
-#             "gender": person.gender,
-#             "dob": person.dob,
-#             "phone": person.phone,
-#         }
-#         print(removeNoneParams(params=params))
-#         createdUser = await PersonDAO.create(**removeNoneParams(params=params))
-#         if createdUser:
-#             return JSONResponse(status_code=201, content=createdUser.to_json())
-#     except Exception as e:
-#         return JSONResponse(
-#             status_code=400, content={"status": 400, "msg": e.__str__()}
-#         )
+@router.post("/")
+async def createFace(face: FaceDTO):
+    try:
+        params = {
+            "FrameFilePath": face.path,
+            "X": face.x,
+            "Y": face.y,
+            "Width": face.width,
+            "Height": face.height,
+            "person_id": face.person_id,
+        }
+        print(removeNoneParams(params=params))
+        createdFace = await FaceDAO.create(**removeNoneParams(params=params))
+        if createdFace:
+            print("Face created",createdFace.FrameFilePath)
+            print(createdFace.to_json())
+            return JSONResponse(status_code=201, content=createdFace.to_json())
+    except Exception as e:
+        print(e)
+        return JSONResponse(
+            status_code=400, content={"status": 400, "msg": e.__str__()}
+        )
+
 
 # @router.put("/{id}")
-# async def updatePerson(person: PersonDTO,id:str):
+# async def updatePerson(person: LogDTO,id:str):
 #     try:
 #         personId = int(id)
 #         params = {
@@ -74,8 +88,8 @@ async def getCameraByID(id: str):
 #             "phone": person.phone,
 #         }
 #         print(removeNoneParams(params=params))
-#         updatedPerson=await PersonDAO.update(person_id=personId,**removeNoneParams(params))    
-#         if updatedPerson:           
+#         updatedPerson=await PersonDAO.update(person_id=personId,**removeNoneParams(params))
+#         if updatedPerson:
 #             return JSONResponse(status_code=200, content=updatedPerson.to_json())
 #         else:
 #             raise Exception('Not found person to update')
@@ -83,13 +97,13 @@ async def getCameraByID(id: str):
 #         return JSONResponse(
 #             status_code=400, content={"status": 400, "msg": e.__str__()}
 #         )
-        
+
 # @router.delete("/{id}")
 # async def deletePersonByID(id: str):
 #     try:
 #         personID=int(id)
 #         deletedUser = await PersonDAO.delete(person_id=personID)
-        
+
 #         if deletedUser:
 #             return JSONResponse(status_code=200, content={
 #                 'status':200,

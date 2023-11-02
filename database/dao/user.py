@@ -1,77 +1,78 @@
 from typing import List, Optional, Union
-
 from database.models.user import UserModel
-
+from tortoise.exceptions import DoesNotExist
+import json
 
 class UserDAO:
     """Class for accessing user table."""
 
-    async def create(self, name: str, username: str, password: str) -> UserModel:
+    @staticmethod
+    async def get(user_id: IndentationError) -> Union[UserModel, None]:
         """
         Add single user to session.
 
         Args:
-            name (str): Name of a user
-            username (str): username
-            password (str): user password
+            user_id (int): user id
 
         Returns:
-            UserModel: User object
+            Union[UserModel, None]: User model
         """
-        return await UserModel.create(
-            name=name,
-            username=username,
-            password=password,
-        )
-
-    async def get_all(self, limit: int, offset: int) -> List[UserModel]:
-        """
-        Get all user models with limit/offset pagination.
-
-        Args:
-            limit (int): limit of dummies.
-            offset (int): offset of dummies.
-
-        Returns:
-            List[UserModel]: stream of dummies.
-        """
-        return await UserModel.all().offset(offset).limit(limit)
-
-    async def filter(self, name: Optional[str] = None) -> List[UserModel]:
-        """
-        Get specific user model.
-
-        Args:
-            name (Optional[str], optional): name of user instance. Defaults to None.
-
-        Returns:
-            List[UserModel]: user models.
-        """
-        query = UserModel.all()
-        if name:
-            query = query.filter(name=name)
-        return await query
-
-    async def get(
-        self,
-        id: Optional[int] = None,
-        username: Optional[str] = None,
-    ) -> Union[UserModel, None]:
-        """
-        Get specific user model.
-
-        Args:
-            id (Optional[int], optional): User id. Defaults to None.
-            username (Optional[str], optional): Username. Defaults to None.
-
-        Returns:
-            Union[UserModel, None]: User object, return None if none exists
-        """
-        query = UserModel.all()
-        if id:
-            query = query.filter(user_id=id).first()
-        elif username:
-            query = query.filter(username=username).first()
-        else:
+        try:
+            return await UserModel.get(user_id=user_id)
+        except DoesNotExist:
             return None
-        return await query
+
+    @staticmethod
+    async def get_all() -> List[UserModel]:
+        """
+        Get all user models.
+
+        Returns:
+            List[UserModel]: List of user models
+        """
+        return await UserModel.all()
+
+    @staticmethod
+    async def filter(**kwargs) -> List[UserModel]:
+        """
+        Filter the user models.
+
+        Returns:
+            List[UserModel]: List of user models
+        """
+        return await UserModel.filter(**kwargs)
+
+    @staticmethod
+    async def create(**kwargs) -> UserModel:
+        """
+        Create user model.
+
+        Returns:
+            UserModel: user model
+        """
+        return await UserModel.create(**kwargs)
+
+    @staticmethod
+    async def delete(user_id: int) -> None:
+        """
+        Delete user model.
+
+        Args:
+            user_id (int): user id to delete
+        """
+        user = await UserDAO.get(user_id)
+        if user:
+            await user.delete()
+
+    @staticmethod
+    def model_to_json(user: UserModel) -> dict:
+        """
+        Convert model to json data type.
+
+        Args:
+            user (UserModel): user model
+
+        Returns:
+            dict: Model data as JSON key-value datatype
+        """
+        return user.to_json()
