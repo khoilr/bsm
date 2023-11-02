@@ -13,8 +13,8 @@ class EventLogModel(models.Model):
     updated_at = fields.DatetimeField(auto_now=True)
 
     # relationship
-    event = fields.ForeignKeyField("models.EventModel", related_name="log_event")
-    face=fields.ForeignKeyField('models.FaceModel',related_name='face_detected')
+    event = fields.ForeignKeyField("models.EventModel", related_name="log_event",null=True)
+    face=fields.ForeignKeyField('models.FaceModel',related_name='face_detected',null=True)
 
     class Meta:
         table = "EventLog"

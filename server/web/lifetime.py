@@ -99,7 +99,8 @@ def register_shutdown_event(
     return _shutdown
 
 URL = "rtsp://0.tcp.ap.ngrok.io:10708/user:1cinnovation;pwd:1cinnovation123"
-camera = VideoCamera(URL=URL)
+# camera = VideoCamera(URL=URL)
+camera =None
 def handleConnectedCLient(sio, sid, *args, **kwargs):
     global camera
     try:

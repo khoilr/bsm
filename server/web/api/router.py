@@ -8,6 +8,8 @@ from server.web.api import (
     people,
     zone,
     event,
+    log,
+    face,
 )
 
 api_router = APIRouter()
@@ -18,3 +20,5 @@ api_router.include_router(event.router)
 api_router.include_router(imagelive.router)
 api_router.include_router(camera.router)
 api_router.include_router(webhook.router)
+api_router.include_router(log.router)
+api_router.include_router(face.router)

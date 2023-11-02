@@ -17,7 +17,7 @@ class CameraModel(models.Model):
     updated_at = fields.DatetimeField(auto_now=True)
 
     # Relationship
-    zone = fields.ForeignKeyField("models.ZoneModel")
+    zone = fields.ForeignKeyField("models.ZoneModel",null=True)
 
     # user = fields.ReverseRelation["models.UserModel"]
 
