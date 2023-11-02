@@ -99,18 +99,18 @@ services:
         networks:
             - bsm
 
-    client:
-        build:
-            context: client
-            dockerfile: dockerfile
-        environment:
-            REACT_APP_EZVIZ_APP_KEY: bb9aa821c13944fbae1f916d0bb1307b
-            REACT_APP_EZVIZ_APP_SECRET: 72ac899e28cd40c78697d146a19e05ae
-            REACT_APP_EZVIZ_END_POINT: https://open.ezvizlife.com
-        networks:
-            - bsm
-        ports:
-            - '30004:3000'
+    # client:
+    #     build:
+    #         context: client
+    #         dockerfile: dockerfile
+    #     environment:
+    #         REACT_APP_EZVIZ_APP_KEY: bb9aa821c13944fbae1f916d0bb1307b
+    #         REACT_APP_EZVIZ_APP_SECRET: 72ac899e28cd40c78697d146a19e05ae
+    #         REACT_APP_EZVIZ_END_POINT: https://open.ezvizlife.com
+    #     networks:
+    #         - bsm
+    #     ports:
+    #         - '30004:3000'
 
 networks:
     bsm:
