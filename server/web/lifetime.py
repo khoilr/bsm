@@ -119,7 +119,7 @@ def register_socket_from_app(app: FastAPI):
     Args:
         app (FastAPI): FastAPI app
     """
-    sio = socketio.AsyncServer(async_mode="asgi", cors_allowed_origins="*")
+    sio = socketio.AsyncServer(async_mode="asgi", cors_allowed_origins=[])
     sio_app = socketio.ASGIApp(socketio_server=sio)
     app.mount("/ws", sio_app)
     CONNECTED_SOCKETS = []
