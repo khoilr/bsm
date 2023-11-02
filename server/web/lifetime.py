@@ -5,16 +5,15 @@ from loguru import logger
 from server.services.redis.lifetime import init_redis, shutdown_redis
 from server.web.api.imagelive.socketmanager import SocketManager
 from database.dao.camera import CameraDAO
+from database.dao.zone import ZoneDAO
 import cv2
 import threading
 import time
-import os
 import base64
 import socketio
 from dotenv import load_dotenv
 from loguru import logger
-import asyncio 
-from redis.asyncio import ConnectionPool, Redis
+from redis.asyncio import Redis
 load_dotenv()
 
 
@@ -76,6 +75,8 @@ def register_startup_event(
 
     @app.on_event("startup")
     async def _startup() -> None:  # noqa: WPS430
+        # zone = await ZoneDAO.create(description='blabla')
+        # await CameraDAO.create(id=1, name='blabla', description="blabla",connect_uri="rtsp://0.tcp.ap.ngrok.io:10708/user:1cinnovation;pwd:1cinnovation123", type=1, zone=zone)
         app.middleware_stack = None
         init_redis(app)
         app.middleware_stack = app.build_middleware_stack()
@@ -119,26 +120,27 @@ def register_socket_from_app(app: FastAPI):
     Args:
         app (FastAPI): FastAPI app
     """
-    sio = socketio.AsyncServer(async_mode="asgi", cors_allowed_origins="*")
+    sio = socketio.AsyncServer(async_mode="asgi", cors_allowed_origins=[])
     sio_app = socketio.ASGIApp(socketio_server=sio)
     app.mount("/ws", sio_app)
     CONNECTED_SOCKETS = []
     camera_list = {}
     @sio.event
     async def connect(sid, environ, auth):
-        print("Client connect with id: " + sid)
+        # logger.info("Client connect with id: " + sid)
         CONNECTED_SOCKETS.append(sid)
         await sio.emit('message', 'connected successfull with id' + sid)
 
     @sio.event
     def disconnect(sid):
-        print("disconnect", sid)
+        # logger.info("disconnect", sid)
         CONNECTED_SOCKETS.remove(sid)
 
     @sio.on('live_data')
     async def subscribe(sid, data):
-        print("Subscribe live data event")
-        if data in camera_list:
+        logger.info("Subscribe live data event")
+        data = data[0]
+        if data not in camera_list:
             camera_model = await CameraDAO.get(camera_id=int(data))
             camera_list[data] = VideoCamera(camera_model.connect_uri)
         prev_value = None
@@ -147,9 +149,13 @@ def register_socket_from_app(app: FastAPI):
             while sid in CONNECTED_SOCKETS:
                 current_value = await redis.get('frames') 
                 if prev_value != current_value:
-                    data = current_value
-                    return sio.send(data=data)
+                    # res = current_value
+                    res={
+                        'type':'redis',
+                        'data':current_value,
+                    }
+                    await sio.send(data=res)
                 else:
-                    data = handleConnectedCLient(camera_list[data])
-                    await sio.send(data=data)
-        print('Socket with ID '+sid+" close event")
+                    res = handleConnectedCLient(camera_list[data])
+                    await sio.send(data=res)
+        logger.info('Socket with ID '+sid+" close event")
