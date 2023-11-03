@@ -11,6 +11,8 @@ MODELS_MODULES: List[str] = [
     "database.models.person",
     "database.models.user",
     "database.models.zone",
+    "database.models.event",
+    "database.models.event_log",
 ]  # noqa: WPS407
 
 TORTOISE_CONFIG = {  # noqa: WPS407
