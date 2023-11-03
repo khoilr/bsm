@@ -5,6 +5,8 @@ from fastapi.responses import UJSONResponse
 from tortoise.contrib.fastapi import register_tortoise
 from fastapi.middleware.cors import CORSMiddleware
 from database.config import TORTOISE_CONFIG
+from database.dao.user import UserDAO
+import asyncio
 from server.web.api.router import api_router
 from server.web.lifetime import (
     register_shutdown_event,
@@ -29,8 +31,15 @@ def get_app() -> FastAPI:
         openapi_url="/api/openapi.json",
         default_response_class=UJSONResponse,
     )
-    app.add_middleware(CORSMiddleware, allow_origins=["*"])
+    origins = ["*"]
 
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=origins,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
     # Adds startup and shutdown events.
     register_startup_event(app)
     register_shutdown_event(app)

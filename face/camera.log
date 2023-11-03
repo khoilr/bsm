@@ -1,0 +1,60 @@
+2023-11-01 09:56:10.901 | INFO     | __main__:main:51 - Connected to the camera.
+2023-11-01 09:57:16.897 | INFO     | __main__:main:51 - Connected to the camera.
+2023-11-01 09:58:01.752 | INFO     | __main__:main:51 - Connected to the camera.
+2023-11-01 09:58:42.975 | INFO     | __main__:main:51 - Connected to the camera.
+2023-11-01 09:59:45.302 | INFO     | __main__:main:51 - Connected to the camera.
+2023-11-01 10:00:56.236 | INFO     | __main__:main:51 - Connected to the camera.
+2023-11-01 10:02:27.512 | INFO     | __main__:main:51 - Connected to the camera.
+2023-11-01 10:03:59.033 | INFO     | __main__:main:51 - Connected to the camera.
+2023-11-01 10:09:13.238 | INFO     | __main__:main:59 - Connected to the camera.
+2023-11-01 10:10:05.470 | INFO     | __main__:main:59 - Connected to the camera.
+2023-11-01 10:11:55.819 | INFO     | __main__:main:59 - Connected to the camera.
+2023-11-01 10:13:40.765 | ERROR    | __main__:main:67 - Failed to capture frame.
+2023-11-01 10:15:50.381 | INFO     | __main__:main:70 - Connected to the camera.
+2023-11-01 10:17:22.976 | INFO     | __main__:main:71 - Connected to the camera.
+2023-11-01 10:18:22.229 | ERROR    | __main__:main:79 - Failed to capture frame.
+2023-11-01 10:18:22.230 | ERROR    | __main__:main:79 - Failed to capture frame.
+2023-11-01 10:19:24.587 | INFO     | __main__:main:68 - Connected to the camera.
+2023-11-01 10:21:04.319 | INFO     | __main__:main:68 - Connected to the camera.
+2023-11-01 10:24:06.775 | INFO     | __main__:main:70 - Connected to the camera.
+2023-11-01 10:25:37.782 | INFO     | __main__:main:70 - Connected to the camera.
+2023-11-01 15:06:38.233 | INFO     | __main__:main:77 - Connected to the camera.
+2023-11-01 15:07:24.432 | INFO     | __main__:main:77 - Connected to the camera.
+2023-11-01 15:09:14.002 | ERROR    | __main__:main:73 - Failed to connect to the camera.
+2023-11-01 15:09:16.735 | ERROR    | __main__:main:73 - Failed to connect to the camera.
+2023-11-01 15:09:19.498 | ERROR    | __main__:main:73 - Failed to connect to the camera.
+2023-11-01 15:10:15.268 | ERROR    | __main__:main:73 - Failed to connect to the camera.
+2023-11-01 15:10:17.482 | ERROR    | __main__:main:73 - Failed to connect to the camera.
+2023-11-01 15:10:19.866 | ERROR    | __main__:main:73 - Failed to connect to the camera.
+2023-11-01 15:10:22.260 | ERROR    | __main__:main:73 - Failed to connect to the camera.
+2023-11-01 15:10:51.020 | INFO     | __main__:main:77 - Connected to the camera.
+2023-11-01 15:17:05.723 | INFO     | __main__:main:79 - Connected to the camera.
+2023-11-01 15:18:54.518 | INFO     | __main__:main:79 - Connected to the camera.
+2023-11-01 15:20:54.282 | INFO     | __main__:main:79 - Connected to the camera.
+2023-11-01 15:22:29.182 | INFO     | __main__:main:79 - Connected to the camera.
+2023-11-01 15:26:18.268 | INFO     | __main__:main_processor:58 - Face detected 1.
+2023-11-01 15:26:19.280 | INFO     | __main__:main_processor:58 - Face detected 1.
+2023-11-01 15:26:20.636 | INFO     | __main__:main_processor:58 - Face detected 1.
+2023-11-01 15:26:24.088 | INFO     | __main__:main_processor:58 - Face detected 1.
+2023-11-01 15:26:26.878 | INFO     | __main__:main_processor:58 - Face detected 2.
+2023-11-01 15:26:29.948 | INFO     | __main__:main_processor:58 - Face detected 1.
+2023-11-01 15:55:29.082 | INFO     | __main__:main:79 - Connected to the camera.
+2023-11-01 15:55:46.933 | INFO     | __main__:main_processor:58 - Face detected 1.
+2023-11-01 15:55:52.587 | INFO     | __main__:main_processor:58 - Face detected 1.
+2023-11-01 15:55:54.105 | INFO     | __main__:main_processor:58 - Face detected 2.
+2023-11-01 15:55:55.592 | INFO     | __main__:main_processor:58 - Face detected 2.
+2023-11-01 15:55:57.775 | INFO     | __main__:main_processor:58 - Face detected 2.
+2023-11-01 15:56:00.680 | INFO     | __main__:main_processor:58 - Face detected 2.
+2023-11-01 15:56:06.021 | INFO     | __main__:main_processor:58 - Face detected 1.
+2023-11-01 15:56:10.270 | INFO     | __main__:main_processor:58 - Face detected 2.
+2023-11-01 15:56:17.306 | INFO     | __main__:main_processor:58 - Face detected 1.
+2023-11-01 15:56:22.067 | INFO     | __main__:main_processor:58 - Face detected 1.
+2023-11-01 15:56:30.214 | INFO     | __main__:main_processor:58 - Face detected 2.
+2023-11-01 15:56:36.575 | INFO     | __main__:main_processor:58 - Face detected 1.
+2023-11-03 10:12:06.118 | INFO     | __main__:main:79 - Connected to the camera.
+2023-11-03 10:21:11.930 | INFO     | __main__:main:79 - Connected to the camera.
+2023-11-03 10:30:14.682 | INFO     | __main__:main:79 - Connected to the camera.
+2023-11-03 10:31:24.493 | INFO     | __main__:main:79 - Connected to the camera.
+2023-11-03 10:31:43.578 | INFO     | __main__:main_processor:58 - Face detected 1.
+2023-11-03 10:31:49.893 | INFO     | __main__:main_processor:58 - Face detected 1.
+2023-11-03 10:31:54.577 | INFO     | __main__:main_processor:58 - Face detected 2.

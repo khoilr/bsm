@@ -1,11 +1,12 @@
 import json
 import os
-from fastapi import APIRouter, Request, Body
+from fastapi import APIRouter, Request, Body, UploadFile, File, Form
 from fastapi.responses import JSONResponse
 from dotenv import load_dotenv
 import requests as rq
 from datetime import datetime as dt
 from server.web.api.setting import *
+from typing import Optional, Annotated, BinaryIO
 
 router = APIRouter(prefix='/webhook')
 
@@ -23,6 +24,24 @@ def sendTelegramMessage(msg):
     return result
 
 
+def sendTelegramPhotoMsg(caption: str, filePath: str):
+    url = f'https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendPhoto?chat_id=-{TELEGRAM_CHATID}'
+    fileData = (open(filePath, 'rb'))
+    formData = {'photo': fileData, }
+    print(formData)
+    result = rq.post(url=url, files=formData, data={'caption': caption})
+    return result
+
+
+def sendTelegramPhotoMsg(caption: str, fileData: BinaryIO):
+    url = f'https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendPhoto?chat_id=-{TELEGRAM_CHATID}'
+    # fileData = (open(filePath, 'rb'))
+    formData = {'photo': fileData, }
+    print(formData)
+    result = rq.post(url=url, files=formData, data={'caption': caption})
+    return result
+
+
 @router.post('/')
 async def getAllCamera(req: Request):
     data = await req.json()
@@ -30,7 +49,7 @@ async def getAllCamera(req: Request):
     print(msg)
     respond = sendTelegramMessage(msg=msg)
     result = (respond.status_code == 200)
-    if (result):
+    if result:
         return JSONResponse({
             'status': 200,
             "msg": 'Success'
@@ -46,27 +65,41 @@ async def getAllCamera(req: Request):
 
 
 @router.post('/detection')
-async def hanldeDetection(req: Request):
-    print(req)
-    data = {}
+async def hanldeDetection(
+        # file: Annotated[bytes, File()],
+        photo: Annotated[UploadFile, File(...)],
+        data: Annotated[str, Form()],
+):
     try:
-        data = await req.json()
+        print("File data:", photo.file)
+        # print(data)
+        jsonData=json.loads(data)
+        print('Json data:',jsonData)
+        
         # handle data receive
-        dateTime = dt.fromtimestamp(int(data['Datetime']))
-        fileName = str(data['FrameFilePath']).split('/').pop()
-        faceID = int(data['FaceID'])
-        respond = sendTelegramMessage(
-            f'Detected person with face ID [{faceID}] in Zone 2 at {dateTime}\nImage detected:\n{SERVER_SCHEME}{SERVER_HOST}:{SERVER_PORT}/api/image/{fileName}')
+        dateTime = dt.fromtimestamp(int(jsonData['Datetime']))
+        # fileName = str(data['FrameFilePath']).split('/').pop()
+        # faceID = int(data['FaceID'])
+        # respond = sendTelegramMessage(
+        #     f'Detected person with face ID [{faceID}] in Zone 2 at {dateTime}\nImage detected:\n{SERVER_SCHEME}{SERVER_HOST}:{SERVER_PORT}/api/image/{fileName}')
+        # result = (respond.status_code == 200)
+        respond = sendTelegramPhotoMsg(
+            f'Có người xuất hiện tại Zone 2 lúc {dateTime}', fileData=photo.file)
         result = (respond.status_code == 200)
+
+        # result = True
         if result:
+            print(respond.json())
             return JSONResponse({
                 'status': 200,
                 "msg": 'Message sent!'
             })
+        print("DOne")
 
     except Exception as e:
-        print("Error handle detection ", e)
-        return JSONResponse({
+        print(e.__cause__)
+        return JSONResponse(
+            status_code=200, content={
             'status': 400,
             "msg": 'Error hanlde data',
             'error:': e.__str__(),
@@ -83,7 +116,7 @@ async def hanldeDetection(req: Request):
     #     'status': respond.status_code,
     #     "msg": respond.json(),
     # })
-    return JSONResponse(data)
+    # return JSONResponse({data})
 
 
 @router.get('/test')

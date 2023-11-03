@@ -33,7 +33,7 @@ class Settings(BaseSettings):
     # quantity of workers for uvicorn
     workers_count: int = 1
     # Enable uvicorn reloading
-    reload: bool = False
+    reload: bool = True
 
     # Current environment
     environment: str = "dev"
@@ -48,7 +48,7 @@ class Settings(BaseSettings):
     db_echo: bool = False
 
     # Variables for Redis
-    redis_host: str = "bsm_server-redis"
+    redis_host: str = "localhost"
     redis_port: int = 6379
     redis_user: Optional[str] = None
     redis_pass: Optional[str] = None

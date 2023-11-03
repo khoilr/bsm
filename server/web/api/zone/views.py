@@ -1,14 +1,11 @@
-import json
-
-
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
-from database.dao.camera import CameraDAO
+from database.dao.zone import ZoneDAO
 from pydantic import BaseModel, Field
 from datetime import datetime
 from server.web.api.utils import removeNoneParams
 
-router = APIRouter(prefix="/camera")
+router = APIRouter(prefix="/zone")
 
 
 # class PersonDTO(BaseModel):
@@ -17,45 +14,26 @@ router = APIRouter(prefix="/camera")
 #     dob: datetime | None = Field(None)
 #     phone: str | None = Field(None)
 
-from server.services.redis.dependency import get_redis_pool
-from loguru import logger
-import asyncio
-from redis.asyncio import ConnectionPool, Redis
 
-
-# @router.get("/blabla")
-# async def listen_for_changes(app: FastAPI, polling_interval: int = 1):
-#     prev_value = None
-#     redis_pool =   app.state.redis_pool
-#     async with Redis(connection_pool=redis_pool) as redis:
-#         while True:
-#             current_value = await redis.get('key')
-#             if prev_value != current_value:
-#                 logger.info(f"Value changed to: {current_value}")
-#                 prev_value = current_value
-#             else:
-#                 logger.info(f"No changes detected")
 @router.get("/")
-async def getAllCamera():
-    # cameraDAO= CameraDao()
-    # cameras = await Camera_Pydantic.from_queryset(CameraModel.all())
-    cameras = await CameraDAO.get_all()
-    return json.dumps(
-        {"count": cameras.__sizeof__(), "data": [camera.id for camera in cameras]}
+async def getAllZone():
+    zones = await ZoneDAO.get_all()
+    return JSONResponse(
+        {"count": zones.__len__(), "data": [zone.to_json() for zone in zones]}
     )
 
 
 @router.get("/{id}")
 async def getCameraByID(id: str):
     try:
-        cameraID = int(id)
-        camera = await CameraDAO.get(cameraID)
-        if camera:
-            return JSONResponse(camera.to_json())
+        zoneID = int(id)
+        zone = await ZoneDAO.get(zoneID)
+        if zone:
+            return JSONResponse(zone.to_json())
         else:
             return JSONResponse(
                 status_code=400,
-                content={"status": 400, "msg": f'Not found camera with ID "{id}"'},
+                content={"status": 400, "msg": f'Not found zone with ID "{id}"'},
             )
     except Exception as e:
         return JSONResponse(
@@ -96,8 +74,8 @@ async def getCameraByID(id: str):
 #             "phone": person.phone,
 #         }
 #         print(removeNoneParams(params=params))
-#         updatedPerson=await PersonDAO.update(person_id=personId,**removeNoneParams(params))
-#         if updatedPerson:
+#         updatedPerson=await PersonDAO.update(person_id=personId,**removeNoneParams(params))    
+#         if updatedPerson:           
 #             return JSONResponse(status_code=200, content=updatedPerson.to_json())
 #         else:
 #             raise Exception('Not found person to update')
@@ -105,13 +83,13 @@ async def getCameraByID(id: str):
 #         return JSONResponse(
 #             status_code=400, content={"status": 400, "msg": e.__str__()}
 #         )
-
+        
 # @router.delete("/{id}")
 # async def deletePersonByID(id: str):
 #     try:
 #         personID=int(id)
 #         deletedUser = await PersonDAO.delete(person_id=personID)
-
+        
 #         if deletedUser:
 #             return JSONResponse(status_code=200, content={
 #                 'status':200,

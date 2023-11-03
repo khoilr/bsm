@@ -1,4 +1,5 @@
 from typing import Awaitable, Callable
+from datetime import datetime
 import json
 from fastapi import FastAPI
 from loguru import logger
@@ -16,6 +17,9 @@ from loguru import logger
 from redis.asyncio import Redis
 
 load_dotenv()
+
+REDIS_INTERVAL = 2  # seconds
+MAX_FRAME_COUNT = 10
 
 
 class VideoCamera(object):
@@ -149,25 +153,42 @@ def register_socket_from_app(app: FastAPI):
             except Exception as e:
                 print(e)
             camera_model = await CameraDAO.get(camera_id=cameraID)
-            camera_list[data] = VideoCamera(camera_model.connect_uri)
-        prev_value = None
+            print("Camera Model:", camera_model.to_json())
+            camera_list[cameraID] = VideoCamera(camera_model.connect_uri)
+        prevTime = datetime.now().timestamp()
         redis_pool = app.state.redis_pool
-        async with Redis(
-            host="localhost", port=30001, connection_pool=redis_pool
-        ) as redis:
-            while sid in CONNECTED_SOCKETS:
-                res = handleConnectedCLient(camera_list[data])
-                await sio.send(data=res)
-                try:
-                    current_value = await redis.get("frames")
-                    if prev_value != current_value:
-                        # res = current_value
-                        res = {
-                            "type": "redis",
-                            "data": current_value,
-                        }
-                        await sio.send(data=res)
-                except Exception as e:
-                    print(e)
+        async with Redis(connection_pool=redis_pool) as redis:
+            # if camera data exist then execute
+            if camera_list[cameraID]:
+                while sid in CONNECTED_SOCKETS:
+                    res = handleConnectedCLient(camera_list[cameraID])
+                    await sio.send(data=res)
+                    try:
+                        currentTime = datetime.now().timestamp()
+                        if (currentTime - prevTime) >= REDIS_INTERVAL:
+                            # update prevtime
+                            prevTime = currentTime
+                            current_value = await redis.xrange(
+                                "frames", count=MAX_FRAME_COUNT
+                            )
+                            # handle data from redis stream
+                            streamData = []
+                            for data in current_value:
+                                sData = {
+                                    k.decode(): v.decode() for k, v in data[1].items()
+                                }
+                                streamData.append(sData)
+                            respond = {"type": "redis", "data": streamData}
+                            # send to client
+                            await sio.send(data=json.dumps(respond))
+                            # if prev_value != current_value:
+                            #     # res = current_value
+                            #     res = {
+                            #         "type": "redis",
+                            #         "data": current_value,
+                            #     }
+                            #     await sio.send(data=res)
+                    except Exception as e:
+                        print(e)
 
         logger.info("Socket with ID " + sid + " close event")
