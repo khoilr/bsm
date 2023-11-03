@@ -14,6 +14,7 @@ import socketio
 from dotenv import load_dotenv
 from loguru import logger
 from redis.asyncio import Redis
+
 load_dotenv()
 
 
@@ -23,20 +24,20 @@ class VideoCamera(object):
         (self.grabbed, self.frame) = self.video.read()
         self.stop_thread = False
         self.paused = False
-        self.lock = threading.Lock()  
+        self.lock = threading.Lock()
         self.thread = threading.Thread(target=self.update, args=())
         self.thread.start()
 
     def __del__(self):
         self.stop_thread = True
-        self.thread.join()  
+        self.thread.join()
         self.video.release()
         cv2.destroyAllWindows()
 
     def get_frame(self):
         with self.lock:
             image = self.frame
-            _, jpeg = cv2.imencode('.jpg', image)
+            _, jpeg = cv2.imencode(".jpg", image)
             return jpeg.tobytes()
 
     def update(self):
@@ -103,15 +104,15 @@ def register_shutdown_event(
     return _shutdown
 
 
-
-def handleConnectedCLient(camera:VideoCamera, *args, **kwargs):
+def handleConnectedCLient(camera: VideoCamera, *args, **kwargs):
     try:
         frame = camera.get_frame()
-        base64_string = base64.b64encode(frame).decode('utf-8')
+        base64_string = base64.b64encode(frame).decode("utf-8")
         response = {"type": "base64", "data": base64_string}
         return json.dumps(response)
     except:
-        return ''
+        return ""
+
 
 def register_socket_from_app(app: FastAPI):
     """
@@ -125,37 +126,48 @@ def register_socket_from_app(app: FastAPI):
     app.mount("/ws", sio_app)
     CONNECTED_SOCKETS = []
     camera_list = {}
+
     @sio.event
     async def connect(sid, environ, auth):
         # logger.info("Client connect with id: " + sid)
         CONNECTED_SOCKETS.append(sid)
-        await sio.emit('message', 'connected successfull with id' + sid)
+        await sio.emit("message", "connected successfull with id" + sid)
 
     @sio.event
     def disconnect(sid):
         # logger.info("disconnect", sid)
         CONNECTED_SOCKETS.remove(sid)
 
-    @sio.on('live_data')
+    @sio.on("live_data")
     async def subscribe(sid, data):
         logger.info("Subscribe live data event")
         data = data[0]
         if data not in camera_list:
-            camera_model = await CameraDAO.get(camera_id=int(data))
+            cameraID = 1
+            try:
+                cameraID = int(data)
+            except Exception as e:
+                print(e)
+            camera_model = await CameraDAO.get(camera_id=cameraID)
             camera_list[data] = VideoCamera(camera_model.connect_uri)
         prev_value = None
         redis_pool = app.state.redis_pool
-        async with Redis(connection_pool=redis_pool) as redis:
+        async with Redis(
+            host="localhost", port=30001, connection_pool=redis_pool
+        ) as redis:
             while sid in CONNECTED_SOCKETS:
-                current_value = await redis.get('frames') 
-                if prev_value != current_value:
-                    # res = current_value
-                    res={
-                        'type':'redis',
-                        'data':current_value,
-                    }
-                    await sio.send(data=res)
-                else:
-                    res = handleConnectedCLient(camera_list[data])
-                    await sio.send(data=res)
-        logger.info('Socket with ID '+sid+" close event")
+                res = handleConnectedCLient(camera_list[data])
+                await sio.send(data=res)
+                try:
+                    current_value = await redis.get("frames")
+                    if prev_value != current_value:
+                        # res = current_value
+                        res = {
+                            "type": "redis",
+                            "data": current_value,
+                        }
+                        await sio.send(data=res)
+                except Exception as e:
+                    print(e)
+
+        logger.info("Socket with ID " + sid + " close event")
