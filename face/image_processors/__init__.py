@@ -32,7 +32,7 @@ def draw_info(frame, face):
     # write name on the rectangle
     image = cv2.putText(
         image,
-        str(face["face_id"]),
+        str(face["name"]),
         (extended_bbox[0] - 10, extended_bbox[1] - 10),
         cv2.FONT_HERSHEY_SIMPLEX,
         0.5,
