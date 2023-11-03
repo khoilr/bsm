@@ -81,19 +81,36 @@ services:
         volumes:
             - ./blob:/app/blob
 
-    # deepdetection:
+    deepface:
+        build:
+            context: .
+            dockerfile: face/dockerfile
+        restart: 'always'
+        volumes:
+            - ./face:/app/face
+        environment:
+            SERVER_SCHEME: http://
+            SERVER_HOST: server
+            SERVER_PORT: 8000
+            BLOB_HOST: blob
+            BLOB_PORT: 7000
+            REDIS_HOST: redis
+            REDIS_PORT: 6379
+        networks:
+            - bsm
+
+    # client:
     #     build:
-    #         context: .
-    #         dockerfile: deepdetection/dockerfile
-    #     restart: 'always'
-    #     volumes:
-    #         - ./deepdetection:/app/deepdetection
+    #         context: client
+    #         dockerfile: dockerfile
     #     environment:
-    #         SERVER_SCHEME: http://
-    #         SERVER_HOST: server
-    #         SERVER_PORT: 8000
+    #         REACT_APP_EZVIZ_APP_KEY: bb9aa821c13944fbae1f916d0bb1307b
+    #         REACT_APP_EZVIZ_APP_SECRET: 72ac899e28cd40c78697d146a19e05ae
+    #         REACT_APP_EZVIZ_END_POINT: https://open.ezvizlife.com
     #     networks:
     #         - bsm
+    #     ports:
+    #         - '30004:3000'
 
 networks:
     bsm:

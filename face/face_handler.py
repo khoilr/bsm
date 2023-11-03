@@ -15,7 +15,7 @@ SERVER_SCHEME =os.getenv('SERVER_SCHEME')
 SERVER_HOST = os.getenv('SERVER_HOST')
 SERVER_PORT = os.getenv('SERVER_PORT')
 
-print(f'API URL: {SERVER_SCHEME}{SERVER_HOST}{SERVER_PORT}')
+print(f'API URL: {SERVER_SCHEME}{SERVER_HOST}:{SERVER_PORT}')
 
 class NpEncoder(json.JSONEncoder):
     def default(self, obj):
