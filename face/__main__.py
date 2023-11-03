@@ -6,7 +6,7 @@ from loguru import logger
 from face.blob import upload_blob
 from face.face_handler import *
 from face.face_processors.face_detection import detect_faces
-from face.face_processors.face_identification import get_face_id
+from face.face_processors.face_identification import get_face_info
 from face.image_processors import draw_info
 import redis
 from redis_connection import redis_pool
@@ -37,7 +37,9 @@ def main_processor(frame):
     faces = detect_faces(frame)
 
     for face in faces:
-        face["face_id"] = get_face_id(face, df_faces)
+        face_info = get_face_info(face, df_faces)
+        face["name"] = face_info["name"]
+        face["face_id"] = face_info["face_id"]
         image = draw_info(frame, face)
         frame_path = "face/images/frame.jpg"
 

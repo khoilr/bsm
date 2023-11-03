@@ -12,7 +12,7 @@ FACE_THRESHOLD = 5
 
 # Init DataFrame
 df_persons: pd.DataFrame = (
-    pd.read_csv(PERSONS_CSV_FILE) if os.path.exists(PERSONS_CSV_FILE) else pd.DataFrame(columns=["face_id", "Name"])
+    pd.read_csv(PERSONS_CSV_FILE) if os.path.exists(PERSONS_CSV_FILE) else pd.DataFrame(columns=["face_id", "name"])
 )
 
 
@@ -26,7 +26,7 @@ def identify_face(frame_1, frame_2) -> bool:
     return result["verified"]
 
 
-def get_face_id(face: dict, df_faces: pd.DataFrame) -> int:
+def get_face_info(face: dict, df_faces: pd.DataFrame) -> int:
     frame = face["face"]
 
     # Extract distinct value of face ID
@@ -66,12 +66,12 @@ def get_face_id(face: dict, df_faces: pd.DataFrame) -> int:
             # If count_true is equal to threshold, return face_id
             # Else if count_false is equal to threshold, break
             if count_true == threshold:
-                return face_id
+                return {"face_id": face_id, "name": df_persons.loc[df_persons["face_id"] == face_id]["name"].values[0]}
             elif count_false == threshold:
                 break
 
     new_id = max_id + 1
-    return save_new_person(new_id, f"Person {new_id}")["face_id"]
+    return save_new_person(new_id, f"Person {new_id}")
 
 
 def save_new_person(person_id, person_name):
