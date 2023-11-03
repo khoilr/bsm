@@ -7,7 +7,7 @@ services:
         networks:
             - bsm
         volumes:
-            - ./redis.conf:/usr/local/etc/redis/redis.conf
+            - ./redis_connection/redis.conf:/usr/local/etc/redis/redis.conf
             - ./backup/redis_data:/data
         command: redis-server /usr/local/etc/redis/redis.conf
 
