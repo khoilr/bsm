@@ -38,18 +38,18 @@ def main():
 
     frame_counter = 0
     read_frame_failures_counter = 0
-    cap_open_counter = 0
+    cap_open_failures_counter = 0
 
-    while cap_open_counter < MAX_CAP_OPEN_FAILURES:
+    while cap_open_failures_counter < MAX_CAP_OPEN_FAILURES:
         cap = cv2.VideoCapture(camera_url)
 
         if not cap.isOpened():
             logger.error("Failed to connect to the camera.")
-            cap_open_counter += 1
+            cap_open_failures_counter += 1
             continue
 
         logger.info("Connected to the camera.")
-        cap_open_counter = 0
+        cap_open_failures_counter = 0
         read_frame_failures_counter = 0
 
         while read_frame_failures_counter < MAX_READ_FRAME_FAILURES:
