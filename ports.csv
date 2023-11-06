@@ -1,0 +1,4 @@
+service,port
+reabbitmq,5672
+face-strorage-db,31002
+blob,32000

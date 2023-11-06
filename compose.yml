@@ -1,103 +1,107 @@
 version: '3'
+
+include:
+    - ./face.database/compose.yml
+
 services:
-    redis:
-        image: redis
-        ports:
-            - '30001:6379'
-        networks:
-            - bsm
-        volumes:
-            - ./redis_connection/redis.conf:/usr/local/etc/redis/redis.conf
-            - ./backup/redis_data:/data
-        command: redis-server /usr/local/etc/redis/redis.conf
+    # redis:
+    #     image: redis
+    #     ports:
+    #         - '30001:6379'
+    #     networks:
+    #         - bsm
+    #     volumes:
+    #         - ./redis_connection/redis.conf:/usr/local/etc/redis/redis.conf
+    #         - ./backup/redis_data:/data
+    #     command: redis-server /usr/local/etc/redis/redis.conf
 
-    postgres:
-        image: postgres
-        ports:
-            - '5432:5432'
-        networks:
-            - bsm
-        volumes:
-            - ./backup/postgres_data:/var/lib/postgresql/data
-        environment:
-            POSTGRES_USER: postgres
-            POSTGRES_PASSWORD: postgres
-            POSTGRES_DB: postgres
-        healthcheck:
-            test: ['CMD', 'pg_isready', '-U', 'postgres']
-            interval: 5s
-            timeout: 5s
-            retries: 10
+    # postgres:
+    #     image: postgres
+    #     ports:
+    #         - '5432:5432'
+    #     networks:
+    #         - bsm
+    #     volumes:
+    #         - ./backup/postgres_data:/var/lib/postgresql/data
+    #     environment:
+    #         POSTGRES_USER: postgres
+    #         POSTGRES_PASSWORD: postgres
+    #         POSTGRES_DB: postgres
+    #     healthcheck:
+    #         test: ['CMD', 'pg_isready', '-U', 'postgres']
+    #         interval: 5s
+    #         timeout: 5s
+    #         retries: 10
 
-    migrator:
-        build:
-            context: .
-            dockerfile: database/dockerfile
-        restart: 'no'
-        command: aerich upgrade
-        environment:
-            BSM_SERVER_DB_HOST: postgres
-            BSM_SERVER_DB_PORT: 5432
-            BSM_SERVER_DB_USER: postgres
-            BSM_SERVER_DB_PASS: postgres
-            BSM_SERVER_DB_BASE: postgres
-        depends_on:
-            postgres:
-                condition: service_healthy
-        networks:
-            - bsm
+    # migrator:
+    #     build:
+    #         context: .
+    #         dockerfile: database/dockerfile
+    #     restart: 'no'
+    #     command: aerich upgrade
+    #     environment:
+    #         BSM_SERVER_DB_HOST: postgres
+    #         BSM_SERVER_DB_PORT: 5432
+    #         BSM_SERVER_DB_USER: postgres
+    #         BSM_SERVER_DB_PASS: postgres
+    #         BSM_SERVER_DB_BASE: postgres
+    #     depends_on:
+    #         postgres:
+    #             condition: service_healthy
+    #     networks:
+    #         - bsm
 
-    server:
-        build:
-            context: .
-            dockerfile: server/dockerfile
-        depends_on:
-            - redis
-            - postgres
-            - migrator
-        ports:
-            - '30000:8000'
-        environment:
-            BSM_SERVER_DB_HOST: postgres
-            BSM_SERVER_DB_PORT: 5432
-            BSM_SERVER_DB_USER: postgres
-            BSM_SERVER_DB_PASS: postgres
-            BSM_SERVER_DB_BASE: postgres
-            BSM_SERVER_REDIS_HOST: redis
-            BSM_SERVER_REDIS_PORT: 6379
-        env_file:
-            - ./server.env
-            - ./telegram_bot.env
-        networks:
-            - bsm
+    # server:
+    #     build:
+    #         context: .
+    #         dockerfile: server/dockerfile
+    #     depends_on:
+    #         - redis
+    #         - postgres
+    #         - migrator
+    #     ports:
+    #         - '30000:8000'
+    #     environment:
+    #         BSM_SERVER_DB_HOST: postgres
+    #         BSM_SERVER_DB_PORT: 5432
+    #         BSM_SERVER_DB_USER: postgres
+    #         BSM_SERVER_DB_PASS: postgres
+    #         BSM_SERVER_DB_BASE: postgres
+    #         BSM_SERVER_REDIS_HOST: redis
+    #         BSM_SERVER_REDIS_PORT: 6379
+    #     env_file:
+    #         - ./server.env
+    #         - ./telegram_bot.env
+    #     networks:
+    #         - bsm
 
-    blob:
-        build:
-            context: .
-            dockerfile: blob/dockerfile
-        restart: 'always'
-        ports:
-            - '30003:8000'
-        volumes:
-            - ./blob:/app/blob
+    # blob:
+    #     build:
+    #         context: .
+    #         dockerfile: blob/dockerfile
+    #     restart: 'always'
+    #     ports:
+    #         - '30003:8000'
+    #     volumes:
+    #         - ./blob:/app/blob
 
-    deepface:
-        build:
-            context: .
-            dockerfile: face/dockerfile
-        restart: 'always'
-        volumes:
-            - ./face:/app/face
-        environment:
-            SERVER_SCHEME: http://
-            SERVER_HOST: server
-            SERVER_PORT: 8000
-            BLOB_HOST: blob
-            BLOB_PORT: 7000
-            REDIS_HOST: redis
-            REDIS_PORT: 6379
-        networks:
-            - bsm
+    # deepface:
+    #     build:
+    #         context: .
+    #         dockerfile: face/dockerfile
+    #     restart: 'always'
+    #     volumes:
+    #         - ./face:/app/face
+    #     environment:
+    #         SERVER_SCHEME: http://
+    #         SERVER_HOST: server
+    #         SERVER_PORT: 8000
+    #         BLOB_HOST: blob
+    #         BLOB_PORT: 7000
+    #         REDIS_HOST: redis
+    #         REDIS_PORT: 6379
+    #     networks:
+    #         - bsm
 
     # client:
     #     build:
@@ -111,6 +115,72 @@ services:
     #         - bsm
     #     ports:
     #         - '30004:3000'
+    rabbitmq:
+        image: 'rabbitmq:management'
+        ports:
+            - '5672:5672'
+            - '15672:15672'
+
+    # Face Storage
+    face-storage-db:
+        image: postgres
+        restart: always
+        environment:
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: postgres
+            POSTGRES_DB: postgres
+        volumes:
+            - face.storage/db_data:/var/lib/postgresql/data
+        ports:
+            - '31002:5432'
+        healthcheck:
+            test: ['CMD', 'pg_isready', '-U', 'postgres']
+            interval: 10s
+            timeout: 5s
+            retries: 5
+
+    face-storage-migrator:
+        build:
+            context: face.storage
+            dockerfile: dockerfile.migrator
+        environment:
+            POSTGRES_HOST: face-storage-db
+            POSTGRES_PORT: 5432
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: postgres
+            POSTGRES_DB: postgres
+        command: ['alembic', 'upgrade', 'head']
+        depends_on:
+            db:
+                condition: service_healthy
+
+    face-storage:
+        build:
+            context: face.storage
+            dockerfile: dockerfile
+        depends_on:
+            - db
+            - rabbitmq
+        environment:
+            POSTGRES_HOST: face-storage-db
+            POSTGRES_PORT: 5432
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: postgres
+            POSTGRES_DB: postgres
+        restart: always
+
+    # Blob
+    blob:
+        build:
+            context: .
+            dockerfile: blob/dockerfile
+        restart: 'always'
+        ports:
+            - '32000:8000'
+        volumes:
+            - ./blob:/app/blob
+
+    # Deepface
 
 networks:
     bsm:
