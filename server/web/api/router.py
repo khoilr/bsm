@@ -10,6 +10,10 @@ from server.web.api import (
     event,
     log,
     face,
+    action,
+    attendance,
+    intruder_log,
+    zone_settings
 )
 
 api_router = APIRouter()
@@ -22,3 +26,7 @@ api_router.include_router(camera.router)
 api_router.include_router(webhook.router)
 api_router.include_router(log.router)
 api_router.include_router(face.router)
+api_router.include_router(action.router)
+api_router.include_router(attendance.router)
+api_router.include_router(intruder_log.router)
+api_router.include_router(zone_settings.router)
