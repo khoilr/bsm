@@ -1,20 +1,20 @@
 version: '3'
 services:
-    redis:
-        image: redis
+    #### Independed services ####
+    blob:
+        build:
+            context: blob
+        restart: 'always'
         ports:
-            - '30001:6379'
+            - '32000:8000'
         networks:
             - bsm
-        volumes:
-            - ./redis_connection/redis.conf:/usr/local/etc/redis/redis.conf
-            - ./backup/redis_data:/data
-        command: redis-server /usr/local/etc/redis/redis.conf
+    #############################
 
     postgres:
         image: postgres
         ports:
-            - '5432:5432'
+            - '30000:5432'
         networks:
             - bsm
         volumes:
@@ -52,34 +52,23 @@ services:
             context: .
             dockerfile: server/dockerfile
         depends_on:
-            - redis
             - postgres
             - migrator
         ports:
-            - '30000:8000'
+            - '31000:8000'
         environment:
             BSM_SERVER_DB_HOST: postgres
             BSM_SERVER_DB_PORT: 5432
             BSM_SERVER_DB_USER: postgres
             BSM_SERVER_DB_PASS: postgres
             BSM_SERVER_DB_BASE: postgres
-            BSM_SERVER_REDIS_HOST: redis
-            BSM_SERVER_REDIS_PORT: 6379
-        env_file:
-            - ./server.env
-            - ./telegram_bot.env
+            SERVER_SCHEME: http
+            SERVER_HOST: localhost
+            SERVER_PORT: 8000
+            TELEGRAM_BOT_TOKEN: 6728691331:AAFbhSQ6Zt1FUO5nrq1tzJdE4rAygUUJIcw
+            TELEGRAM_CHATID: 1002082538383
         networks:
             - bsm
-
-    blob:
-        build:
-            context: .
-            dockerfile: blob/dockerfile
-        restart: 'always'
-        ports:
-            - '30003:8000'
-        volumes:
-            - ./blob:/app/blob
 
     deepface:
         build:
@@ -89,28 +78,13 @@ services:
         volumes:
             - ./face:/app/face
         environment:
-            SERVER_SCHEME: http://
+            SERVER_SCHEME: http
             SERVER_HOST: server
             SERVER_PORT: 8000
             BLOB_HOST: blob
-            BLOB_PORT: 7000
-            REDIS_HOST: redis
-            REDIS_PORT: 6379
+            BLOB_PORT: 8000
         networks:
             - bsm
-
-    # client:
-    #     build:
-    #         context: client
-    #         dockerfile: dockerfile
-    #     environment:
-    #         REACT_APP_EZVIZ_APP_KEY: bb9aa821c13944fbae1f916d0bb1307b
-    #         REACT_APP_EZVIZ_APP_SECRET: 72ac899e28cd40c78697d146a19e05ae
-    #         REACT_APP_EZVIZ_END_POINT: https://open.ezvizlife.com
-    #     networks:
-    #         - bsm
-    #     ports:
-    #         - '30004:3000'
 
 networks:
     bsm:

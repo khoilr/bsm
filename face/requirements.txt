@@ -11,3 +11,4 @@ python-dotenv
 requests-toolbelt
 redis
 scikit-image
+requests

@@ -4,7 +4,14 @@ import numpy as np
 import pandas as pd
 from deepface import DeepFace
 from skimage import io
+from dotenv import load_dotenv
+load_dotenv()
 
+# Environment variables
+BLOB_HOST = os.environ.get("BLOB_HOST", "localhost")
+BLOB_PORT = os.environ.get("BLOB_PORT", 32000)
+
+# Constants
 FACES_CSV_FILE = "face/faces.csv"
 PERSONS_CSV_FILE = "face/persons.csv"
 FRAME_DIR = "face/images"
@@ -14,6 +21,8 @@ FACE_THRESHOLD = 5
 df_persons: pd.DataFrame = (
     pd.read_csv(PERSONS_CSV_FILE) if os.path.exists(PERSONS_CSV_FILE) else pd.DataFrame(columns=["face_id", "name"])
 )
+
+print(f"http://{BLOB_HOST}:{BLOB_PORT}/blob")
 
 
 def identify_face(frame_1, frame_2) -> bool:
@@ -57,7 +66,7 @@ def get_face_info(face: dict, df_faces: pd.DataFrame) -> int:
         for path in paths:
             if identify_face(
                 frame,
-                io.imread(f"http://localhost:30003/blob/{path}"),
+                io.imread(f"http://{BLOB_HOST}:{BLOB_PORT}/blob/{path}"),
             ):
                 count_true += 1
             else:

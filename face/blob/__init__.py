@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 BLOB_HOST = os.environ.get("BLOB_HOST", "localhost")
-BLOB_PORT = os.environ.get("BLOB_PORT", 30003)
+BLOB_PORT = os.environ.get("BLOB_PORT", 32000)
 
 
 def upload_blob(file_path):

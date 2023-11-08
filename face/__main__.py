@@ -1,17 +1,21 @@
+import os
+
 import cv2
 import pandas as pd
 from dotenv import load_dotenv
 from loguru import logger
-
+import requests
 from face.blob import upload_blob
-from face.face_handler import *
 from face.face_processors.face_detection import detect_faces
 from face.face_processors.face_identification import get_face_info
 from face.image_processors import draw_info
-import redis
-from redis_connection import redis_pool
 
 load_dotenv()
+
+# Environment variables
+server_scheme = os.environ.get("SERVER_SCHEME", "http")
+server_host = os.environ.get("SERVER_HOST", "localhost")
+server_port = os.environ.get("SERVER_PORT", 31000)
 
 # Constants
 LOG_FILE = "face/camera.log"
@@ -21,13 +25,12 @@ MAX_CAP_OPEN_FAILURES = 10
 MAX_READ_FRAME_FAILURES = 10
 FRAME_FREQUENCY = 5
 
+# DataFrame faces configuration
 df_faces: pd.DataFrame = (
     pd.read_csv(FACES_CSV_FILE)
     if os.path.exists(FACES_CSV_FILE)
     else pd.DataFrame(columns=["timestamp", "face", "facial_area", "confidence", "face_id", "path"])
 )
-
-redis_connection = redis.Redis(connection_pool=redis_pool)
 
 # Configure logger
 logger.add(LOG_FILE, rotation="500 MB")
@@ -54,12 +57,13 @@ def main_processor(frame):
         }
         df_faces.to_csv(FACES_CSV_FILE, index=False)
 
-        # redis append to stream 'frames'
-        redis_connection.xadd("frames", {"url": f"http://localhost:30003/blob/{blob['stored_name']}"})
+        # send a post request to server endpoint /api/log
+        payload = {"video_url": "1", "image_id": blob["stored_name"], "event_id": 4, "face": int(face["face_id"])}
+        method = "post"
+        url = f"{server_scheme}://{server_host}:{server_port}/api/log"
+        requests.request(method, url, json=payload, timeout=30)
 
         logger.info(f"Face detected {face['face_id']}.")
-
-        cv2.imshow("frame", image)
 
 
 # Main function to capture frames, process faces, and save results

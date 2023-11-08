@@ -1,11 +1,7 @@
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
-from database.dao.event_log import EventLogDAO
-from database.dao.event import EventDAO
 from database.dao.face import FaceDAO
 from pydantic import BaseModel, Field
-from datetime import datetime
-from typing import Optional
 from server.web.api.utils import removeNoneParams
 
 router = APIRouter(prefix="/face")
@@ -23,15 +19,11 @@ class FaceDTO(BaseModel):
 @router.get("/")
 async def getAllFaces():
     faces = await FaceDAO.get_all()
-    return JSONResponse(
-        {"count": faces.__len__(), "data": [face.to_json() for face in faces]}
-    )
+    return JSONResponse({"count": faces.__len__(), "data": [face.to_json() for face in faces]})
 
 
 @router.get("/{id}")
-async def getFaceByID(
-    id: str,
-):
+async def getFaceByID(id: str):
     try:
         faceID = int(id)
         face = await FaceDAO.get(faceID)
@@ -43,7 +35,6 @@ async def getFaceByID(
                 content={"status": 400, "msg": f"Not found face with ID '{id}'"},
             )
     except Exception as e:
-        
         return JSONResponse(
             status_code=400,
             content={
@@ -67,14 +58,12 @@ async def createFace(face: FaceDTO):
         print(removeNoneParams(params=params))
         createdFace = await FaceDAO.create(**removeNoneParams(params=params))
         if createdFace:
-            print("Face created",createdFace.FrameFilePath)
+            print("Face created", createdFace.FrameFilePath)
             print(createdFace.to_json())
             return JSONResponse(status_code=201, content=createdFace.to_json())
     except Exception as e:
         print(e)
-        return JSONResponse(
-            status_code=400, content={"status": 400, "msg": e.__str__()}
-        )
+        return JSONResponse(status_code=400, content={"status": 400, "msg": e.__str__()})
 
 
 # @router.put("/{id}")
