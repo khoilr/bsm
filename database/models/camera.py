@@ -1,6 +1,7 @@
 from tortoise import fields, models
 import datetime
 from tortoise.queryset import QuerySet
+from tortoise.fields.relational import _NoneAwaitable
 
 
 class CameraModel(models.Model):
@@ -38,7 +39,7 @@ class CameraModel(models.Model):
                 value = value.id if value else None
             elif isinstance(value, datetime.datetime):
                 value = int(round(value.timestamp())) if value else None
-            elif isinstance(value, (fields.ReverseRelation)):
+            elif isinstance(value, (fields.ReverseRelation, _NoneAwaitable)):
                 continue
             model_data[field_name] = value
         return {

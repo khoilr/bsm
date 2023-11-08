@@ -1,6 +1,8 @@
 from tortoise import fields, models
 import datetime
 from tortoise.queryset import QuerySet
+from tortoise.fields.relational import _NoneAwaitable
+
 
 class UserModel(models.Model):
     """Data model for user."""
@@ -15,7 +17,7 @@ class UserModel(models.Model):
     manager = fields.BooleanField()
 
     # relationship
-    person = fields.OneToOneField('models.PersonModel', related_name='user_person')
+    person = fields.OneToOneField("models.PersonModel", related_name="user_person")
 
     class Meta:
         table = "User"
@@ -24,10 +26,18 @@ class UserModel(models.Model):
         model_data = {}
         for field_name, field_object in self._meta.fields_map.items():
             value = getattr(self, field_name)
-            if isinstance(field_object, (fields.ForeignKeyField.__class__, fields.OneToOneField.__class__)):
-                value = value.person_id if value else None
-            elif isinstance(value, datetime.datetime):  
+            if isinstance(
+                field_object,
+                (fields.ForeignKeyField.__class__, fields.OneToOneField.__class__),
+            ):
+                value = value.id if value else None
+            elif isinstance(value, datetime.datetime):
                 value = int(round(value.timestamp())) if value else None
+            elif isinstance(value, (fields.ReverseRelation, _NoneAwaitable)):
+                continue
             model_data[field_name] = value
-        return {key: value for key, value in model_data.items() if not isinstance(value, QuerySet)}
-  
+        return {
+            key: value
+            for key, value in model_data.items()
+            if not isinstance(value, QuerySet)
+        }
