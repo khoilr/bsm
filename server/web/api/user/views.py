@@ -6,10 +6,8 @@ from fastapi.param_functions import Depends
 from database.dao.user import UserDAO
 from database.models.user import UserModel
 from server.web.api.user.schema import UserModelInputDTO, UserOutputDTO
+
 router = APIRouter()
-
-
-
 
 
 @router.get("/", response_model=List[UserOutputDTO])

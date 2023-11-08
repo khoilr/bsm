@@ -4,15 +4,15 @@ import shutil
 from datetime import datetime
 from pathlib import Path
 
-from fastapi import Depends, FastAPI, File, HTTPException, UploadFile
+from fastapi import FastAPI, HTTPException, UploadFile
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
 app = FastAPI()
 
 # Define a base path for uploads
-UPLOADS_DIR = "blob/uploads"
-METADATA_FILE = "blob/metadata.json"
+UPLOADS_DIR = "uploads"
+METADATA_FILE = "metadata.json"
 
 # Mount the 'public' directory as a static asset
 app.mount("/blob", StaticFiles(directory=UPLOADS_DIR), name="blob")
@@ -49,7 +49,7 @@ async def upload_file(file: UploadFile):
         "created_at": created_at,
         "file_size": file_size,
     }
-    with open(METADATA_FILE, "a") as json_file:
+    with open(METADATA_FILE, "a", encoding="utf-8") as json_file:
         json.dump(metadata, json_file)
         json_file.write("\n")
 
@@ -57,7 +57,8 @@ async def upload_file(file: UploadFile):
         "stored_name": stored_name,
         "original_name": original_name,
         "created_at": created_at,
-        "file_size": file_size,    }
+        "file_size": file_size,
+    }
 
 
 @app.get("/download/{filename}")
@@ -95,7 +96,7 @@ async def delete_file(filename: str):
 
 
 def get_metadata(filename: str):
-    with open(METADATA_FILE, "r") as json_file:
+    with open(METADATA_FILE, "r", encoding="utf-8") as json_file:
         for line in json_file:
             metadata = json.loads(line)
             if metadata["stored_name"] == filename:
@@ -104,9 +105,9 @@ def get_metadata(filename: str):
 
 
 def update_metadata_file(filename: str):
-    with open(METADATA_FILE, "r") as json_file:
+    with open(METADATA_FILE, "r", encoding="utf-8") as json_file:
         lines = json_file.readlines()
-    with open(METADATA_FILE, "w") as json_file:
+    with open(METADATA_FILE, "w", encoding="utf-8") as json_file:
         for line in lines:
             metadata = json.loads(line)
             if metadata["stored_name"] != filename:
