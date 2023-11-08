@@ -7,8 +7,6 @@ services:
         restart: 'always'
         ports:
             - '32000:8000'
-        volumes:
-            - ./blob:/app/blob
         networks:
             - bsm
     #############################

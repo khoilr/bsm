@@ -203,3 +203,6 @@
 2023-11-08 08:32:19.625 | ERROR    | __main__:main:81 - Failed to connect to the camera.
 2023-11-08 08:33:18.997 | INFO     | __main__:main:85 - Connected to the camera.
 2023-11-08 08:35:01.983 | INFO     | __main__:main:85 - Connected to the camera.
+2023-11-08 08:37:06.665 | INFO     | __main__:main:85 - Connected to the camera.
+2023-11-08 08:37:51.871 | INFO     | __main__:main:85 - Connected to the camera.
+2023-11-08 08:37:56.576 | INFO     | __main__:main:85 - Connected to the camera.
