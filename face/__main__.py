@@ -14,8 +14,8 @@ load_dotenv()
 
 # Environment variables
 server_scheme = os.environ.get("SERVER_SCHEME", "http")
-server_url = os.environ.get("SERVER_URL", "localhost")
-server_port = os.environ.get("SERVER_PORT", 30000)
+server_host = os.environ.get("SERVER_HOST", "localhost")
+server_port = os.environ.get("SERVER_PORT", 31000)
 
 # Constants
 LOG_FILE = "face/camera.log"

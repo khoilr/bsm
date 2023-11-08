@@ -9,6 +9,8 @@ services:
             - '32000:8000'
         volumes:
             - ./blob:/app/blob
+        networks:
+            - bsm
     #############################
 
     postgres:
