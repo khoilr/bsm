@@ -58,7 +58,7 @@ def main_processor(frame):
         df_faces.to_csv(FACES_CSV_FILE, index=False)
 
         # send a post request to server endpoint /api/log
-        payload = {"video_url": "", "image_id": blob["stored_name"], "event_id": 4, "face": face["face_id"]}
+        payload = {"video_url": "1", "image_id": blob["stored_name"], "event_id": 4, "face": int(face["face_id"])}
         method = "post"
         url = f"{server_scheme}://{server_host}:{server_port}/api/log"
         requests.request(method, url, json=payload, timeout=30)

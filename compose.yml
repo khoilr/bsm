@@ -62,7 +62,7 @@ services:
             BSM_SERVER_DB_USER: postgres
             BSM_SERVER_DB_PASS: postgres
             BSM_SERVER_DB_BASE: postgres
-            SERVER_SCHEME: http://
+            SERVER_SCHEME: http
             SERVER_HOST: localhost
             SERVER_PORT: 8000
             TELEGRAM_BOT_TOKEN: 6728691331:AAFbhSQ6Zt1FUO5nrq1tzJdE4rAygUUJIcw
@@ -78,7 +78,7 @@ services:
         volumes:
             - ./face:/app/face
         environment:
-            SERVER_SCHEME: http://
+            SERVER_SCHEME: http
             SERVER_HOST: server
             SERVER_PORT: 8000
             BLOB_HOST: blob

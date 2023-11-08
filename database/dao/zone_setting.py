@@ -2,8 +2,8 @@ from tortoise.exceptions import DoesNotExist
 from typing import List, Union
 from database.models.zone_setting import ZoneSettingModel
 
-class ZoneSettingDAO:
 
+class ZoneSettingDAO:
     @staticmethod
     async def get(zone_setting_id: int) -> Union[ZoneSettingModel, None]:
         """
@@ -54,7 +54,7 @@ class ZoneSettingDAO:
         Returns:
             ZoneSettingModel: The created ZoneSetting model.
         """
-        zone_setting = await ZoneSettingModel.create(name=name, description=description, config=config, zone_id=zone_id)
+        zone_setting = await ZoneSettingModel.create(**kwargs)
         return zone_setting
 
     @staticmethod
