@@ -60,7 +60,7 @@ def main_processor(frame):
         # send a post request to server endpoint /api/log
         payload = {"video_url": "", "image_id": blob["stored_name"], "event_id": 4, "face": face["face_id"]}
         method = "post"
-        url = f"{server_scheme}://{server_url}:{server_port}/api/log"
+        url = f"{server_scheme}://{server_host}:{server_port}/api/log"
         requests.request(method, url, json=payload, timeout=30)
 
         logger.info(f"Face detected {face['face_id']}.")
