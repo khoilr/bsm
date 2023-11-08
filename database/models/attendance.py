@@ -25,7 +25,9 @@ class AttendaceTrackingModel(models.Model):
             value = getattr(self, field_name)
             if isinstance(field_object, (fields.ForeignKeyField.__class__, fields.OneToOneField.__class__)):
                 value = value.id if value else None
-            elif isinstance(value, datetime.datetime):  
+            elif isinstance(value, datetime.datetime):
                 value = int(round(value.timestamp())) if value else None
+            elif isinstance(value,(fields.ReverseRelation,_NoneAwaitable)):
+                continue
             model_data[field_name] = value
         return {key: value for key, value in model_data.items() if not isinstance(value, QuerySet)}

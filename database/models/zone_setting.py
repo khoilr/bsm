@@ -3,19 +3,21 @@ import datetime
 from tortoise.queryset import QuerySet
 
 
-class ZoneModel(models.Model):
-    """Tortoise-based zone model."""
+class ZoneSettingModel(models.Model):
+    """Model for demo purpose."""
 
-    # Fields
-    zone_id = fields.IntField(pk=True)
-    name = fields.CharField(max_length=255, null=True)
+    id = fields.IntField(pk=True)
+    name = fields.CharField(max_length=255)  # noqa: WPS432
     description = fields.CharField(max_length=255, null=True)
-    placeholder_url = fields.CharField(max_length=255, null=True)
-    created_at = fields.DatetimeField(auto_now_add=True)
-    updated_at = fields.DatetimeField(auto_now=True)
+    config = fields.CharField(max_length=255)
+
+    # relationship
+    zone = fields.ForeignKeyField(
+        "models.ZoneModel", related_name="zone_setting_zone", null=True
+    )
 
     class Meta:
-        table = "Zone"
+        table = "ZoneSetting"
 
     def to_json(self):
         model_data = {}
