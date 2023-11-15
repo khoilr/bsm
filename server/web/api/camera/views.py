@@ -40,8 +40,8 @@ async def getAllCamera():
     # cameraDAO= CameraDao()
     # cameras = await Camera_Pydantic.from_queryset(CameraModel.all())
     cameras = await CameraDAO.get_all()
-    return json.dumps(
-        {"count": cameras.__sizeof__(), "data": [camera.id for camera in cameras]}
+    return JSONResponse(
+        {"count": cameras.__sizeof__(), "data": [camera.to_json() for camera in cameras]}
     )
 
 
