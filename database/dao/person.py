@@ -1,9 +1,9 @@
 from tortoise.exceptions import DoesNotExist
 from typing import List, Union
-from database.models.person import PersonModel  
+from database.models.person import PersonModel
+
 
 class PersonDAO:
-
     @staticmethod
     async def get(person_id: int) -> Union[PersonModel, None]:
         """
@@ -61,12 +61,12 @@ class PersonDAO:
         person = await PersonDAO.get(person_id)
         if person:
             updatedPerson = await person.update_from_dict(kwargs)
-            updatedPerson.save()
+            await updatedPerson.save()
             return updatedPerson
         return None
 
     @staticmethod
-    async def delete(person_id: int) :
+    async def delete(person_id: int):
         """
         Delete a specific Person by its ID.
 
@@ -78,7 +78,7 @@ class PersonDAO:
             await person.delete()
             return person
         return None
-    
+
     @staticmethod
     def model_to_json(person: PersonModel) -> dict:
         """

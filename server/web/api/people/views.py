@@ -9,10 +9,12 @@ router = APIRouter(prefix="/people")
 
 
 class PersonDTO(BaseModel):
-    name: str = Field(..., description="This field must not be empty")
+    name: str | None = Field(None)
     gender: int = Field(0)
     dob: datetime | None = Field(None)
     phone: str | None = Field(None)
+    avatar_url: str | None = Field(None)
+    position: str | None = Field(None)
 
 
 @router.get("/")
@@ -54,6 +56,8 @@ async def createPerson(person: PersonDTO):
             "gender": person.gender,
             "dob": person.dob,
             "phone": person.phone,
+            "avatar_url": person.avatar_url,
+            "position": person.position,
         }
         print(removeNoneParams(params=params))
         createdUser = await PersonDAO.create(**removeNoneParams(params=params))
@@ -64,8 +68,9 @@ async def createPerson(person: PersonDTO):
             status_code=400, content={"status": 400, "msg": e.__str__()}
         )
 
+
 @router.put("/{id}")
-async def updatePerson(person: PersonDTO,id:str):
+async def updatePerson(person: PersonDTO, id: str):
     try:
         personId = int(id)
         params = {
@@ -73,34 +78,42 @@ async def updatePerson(person: PersonDTO,id:str):
             "gender": person.gender,
             "dob": person.dob,
             "phone": person.phone,
+            "avatar_url": person.avatar_url,
+            "position": person.position,
         }
-        print(removeNoneParams(params=params))
-        updatedPerson=await PersonDAO.update(person_id=personId,**removeNoneParams(params))    
-        if updatedPerson:           
+        updatedPerson = await PersonDAO.update(
+            person_id=personId, **removeNoneParams(params)
+        )
+        print(updatedPerson.to_json())
+        if updatedPerson:
             return JSONResponse(status_code=200, content=updatedPerson.to_json())
         else:
-            raise Exception('Not found person to update')
+            raise Exception("Not found person to update")
     except Exception as e:
         return JSONResponse(
             status_code=400, content={"status": 400, "msg": e.__str__()}
         )
-        
+
+
 @router.delete("/{id}")
 async def deletePersonByID(id: str):
     try:
-        personID=int(id)
+        personID = int(id)
         deletedUser = await PersonDAO.delete(person_id=personID)
-        
+
         if deletedUser:
-            return JSONResponse(status_code=200, content={
-                'status':200,
-                'msg':f'Delete person with ID {id} succesfully'
-            })
+            return JSONResponse(
+                status_code=200,
+                content={
+                    "status": 200,
+                    "msg": f"Delete person with ID '{id}' succesfully",
+                },
+            )
         else:
-            return JSONResponse(status_code=200, content={
-                'status':200,
-                'msg':'Not found person to delete'
-            })
+            return JSONResponse(
+                status_code=200,
+                content={"status": 200, "msg": "Not found person to delete"},
+            )
     except Exception as e:
         return JSONResponse(
             status_code=400, content={"status": 400, "msg": e.__str__()}

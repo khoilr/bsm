@@ -3,8 +3,8 @@ from typing import List, Union
 import json
 from database.models.zone import ZoneModel
 
-class ZoneDAO:
 
+class ZoneDAO:
     @staticmethod
     async def get(zone_id: int) -> Union[ZoneModel, None]:
         """
@@ -52,7 +52,7 @@ class ZoneDAO:
         return await ZoneModel.create(**kwargs)
 
     @staticmethod
-    async def update(zone_id: int, **kwargs) -> None:
+    async def update(zone_id: int, **kwargs):
         """
         Update a specific Zone using provided keyword arguments.
 
@@ -61,10 +61,12 @@ class ZoneDAO:
         """
         zone = await ZoneDAO.get(zone_id)
         if zone:
-            await zone.update_from_dict(kwargs).save()
+            updatedZone = await zone.update_from_dict(kwargs)
+            await updatedZone.save()
+            return updatedZone
 
     @staticmethod
-    async def delete(zone_id: int) -> None:
+    async def delete(zone_id: int):
         """
         Delete a specific Zone by its ID.
 
@@ -74,6 +76,7 @@ class ZoneDAO:
         zone = await ZoneDAO.get(zone_id)
         if zone:
             await zone.delete()
+            return zone
 
     @staticmethod
     def model_to_json(zone: ZoneModel) -> dict:
@@ -87,7 +90,3 @@ class ZoneDAO:
             dict: Model data as JSON key-value datatype
         """
         return zone.to_json()
-
-
-
-
