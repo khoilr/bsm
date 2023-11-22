@@ -3,7 +3,6 @@ from fastapi.responses import JSONResponse
 from loguru import logger
 from database.dao.zone import ZoneDAO
 from pydantic import BaseModel, Field
-from datetime import datetime
 from server.web.api.utils import removeNoneParams
 
 router = APIRouter(prefix="/zone")

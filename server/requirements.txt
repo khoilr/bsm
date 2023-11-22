@@ -16,3 +16,5 @@ python-jose
 python-multipart
 python-socketio
 requests
+apscheduler
+aspose-cells-python
